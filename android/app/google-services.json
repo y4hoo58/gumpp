@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "156398905376",
+    "project_id": "myfirstgame-3d7c1",
+    "storage_bucket": "myfirstgame-3d7c1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:156398905376:android:686693f58ebca4bd4bb445",
+        "android_client_info": {
+          "package_name": "com.y4hoo.gumpp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "156398905376-kv0v7veob4bp25phj97rjd374bb1laqd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-5PhJtcdM_zgSvd9au7qvNEAlwonjWIc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "156398905376-kv0v7veob4bp25phj97rjd374bb1laqd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

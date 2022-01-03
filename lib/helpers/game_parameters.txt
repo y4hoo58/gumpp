@@ -1,0 +1,48 @@
+
+Character
+
+radius = radius_fac * screenSize.width;
+center_x = center_x_fac * screenSize.width;
+center_y = center_y_fac * screenSize.height;
+y_speed = y_speed_fac * screenSize.width;
+
+double pow_dist = pow(dist, 1.5 + (dist / 2));
+
+y_speed = y_speed - (t * gravity * game_mode_factor);
+
+
+Sticks 
+
+center_x =
+        rng.nextInt((screenSize.width - (1 * width)).floor()).toDouble() +
+            (width / 2);
+center_y = spawn_y;
+
+x_speed = stick_speed;
+spawn_y = all_sticks[all_sticks.length - 1].center_y - 100;
+
+
+Game Design
+
+
+int max_sticks = 20;
+bool is_stick_movable = true;
+
+String game_mode;
+bool change_game_mode = false;
+int stick_moving_rand = 20;
+double stick_speed = 100;
+double total_points = 0;
+
+
+
+Game Constants
+
+const radius_fac = 1 / 20;
+const center_x_fac = 1 / 2;
+const center_y_fac = 9 / 10;
+const y_speed_fac = 4 / 15;
+const gravity_fac = 6 / 10;
+const y_speed_boost_fac = 6 / 15;
+
+
