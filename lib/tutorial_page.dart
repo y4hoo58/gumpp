@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 
 import 'package:flame/sprite.dart';
 
-class TutorialPage {
-  Size screenSize;
+import 'package:gumpp/app_params.dart';
 
+class TutorialPage {
   Sprite too_close = Sprite("too_close.png");
   Sprite too_up = Sprite("too_up.png");
   Sprite too_down = Sprite("too_down.png");
@@ -20,7 +20,7 @@ class TutorialPage {
   double moving_hand_timer = 4;
   double t = 0;
 
-  TutorialPage(this.screenSize);
+  TutorialPage();
 
   void render_tutorial_page(Canvas canvas) {
     render_black_box(canvas);
@@ -38,10 +38,10 @@ class TutorialPage {
       ..style = PaintingStyle.fill;
 
     Rect black_rect;
-    double render_x = screenSize.width * 0.0;
-    double render_y = screenSize.height * 0;
-    black_rect = Rect.fromLTWH(
-        render_x, render_y, screenSize.width, screenSize.height * 0.375);
+    double render_x = AppParams.gameSize[0] * 0.0;
+    double render_y = AppParams.gameSize[1] * 0;
+    black_rect = Rect.fromLTWH(render_x, render_y, AppParams.gameSize[0],
+        AppParams.gameSize[1] * 0.375);
     canvas.drawRect(black_rect, paint);
   }
 
@@ -72,54 +72,54 @@ class TutorialPage {
   //TODO: Ekran oranına göre boyutları öyle bir ayarla ki resim kareye çok yakın olsun..
   void render_phone_image_one(Canvas canvas) {
     Rect phone_rect;
-    double render_x = screenSize.width * 0.05;
-    double render_y = screenSize.height * 0.15;
+    double render_x = AppParams.gameSize[0] * 0.05;
+    double render_y = AppParams.gameSize[1] * 0.15;
 
-    phone_rect = Rect.fromLTWH(
-        render_x, render_y, screenSize.width * 0.2, screenSize.height * 0.09);
+    phone_rect = Rect.fromLTWH(render_x, render_y, AppParams.gameSize[0] * 0.2,
+        AppParams.gameSize[1] * 0.09);
     too_down.renderRect(canvas, phone_rect);
   }
 
   void render_phone_image_two(Canvas canvas) {
     Rect phone_rect;
-    double render_x = screenSize.width * 0.275;
-    double render_y = screenSize.height * 0.15;
-    phone_rect = Rect.fromLTWH(
-        render_x, render_y, screenSize.width * 0.2, screenSize.height * 0.09);
+    double render_x = AppParams.gameSize[0] * 0.275;
+    double render_y = AppParams.gameSize[1] * 0.15;
+    phone_rect = Rect.fromLTWH(render_x, render_y, AppParams.gameSize[0] * 0.2,
+        AppParams.gameSize[1] * 0.09);
     too_up.renderRect(canvas, phone_rect);
   }
 
   void render_phone_image_three(Canvas canvas) {
     Rect phone_rect;
-    double render_x = screenSize.width * 0.5;
-    double render_y = screenSize.height * 0.15;
-    phone_rect = Rect.fromLTWH(
-        render_x, render_y, screenSize.width * 0.2, screenSize.height * 0.09);
+    double render_x = AppParams.gameSize[0] * 0.5;
+    double render_y = AppParams.gameSize[1] * 0.15;
+    phone_rect = Rect.fromLTWH(render_x, render_y, AppParams.gameSize[0] * 0.2,
+        AppParams.gameSize[1] * 0.09);
     too_close.renderRect(canvas, phone_rect);
   }
 
   void render_phone_image_four(canvas) {
     Rect correct_rect;
-    double render_x = screenSize.width * 0.75;
-    double render_y = screenSize.height * 0.15;
-    correct_rect = Rect.fromLTWH(
-        render_x, render_y, screenSize.width * 0.2, screenSize.height * 0.09);
+    double render_x = AppParams.gameSize[0] * 0.75;
+    double render_y = AppParams.gameSize[1] * 0.15;
+    correct_rect = Rect.fromLTWH(render_x, render_y,
+        AppParams.gameSize[0] * 0.2, AppParams.gameSize[1] * 0.09);
     correct_sprite.renderRect(canvas, correct_rect);
   }
 
   ///////////////////////////////////
 
   void render_moving_hand(Canvas canvas) {
-    double render_beg_x = screenSize.width * 0.4;
-    double render_fin_x = screenSize.width * 0.5;
-    double render_y = screenSize.height * 0.65;
+    double render_beg_x = AppParams.gameSize[0] * 0.4;
+    double render_fin_x = AppParams.gameSize[0] * 0.5;
+    double render_y = AppParams.gameSize[1] * 0.65;
 
     if (moving_hand_center_x == null) {
       moving_hand_center_x = render_beg_x;
       moving_hand_direction = 1;
     } else {
       moving_hand_center_x = moving_hand_center_x +
-          screenSize.width * 0.005 * moving_hand_direction;
+          AppParams.gameSize[0] * 0.005 * moving_hand_direction;
     }
     if (moving_hand_direction == 1 && moving_hand_center_x > render_fin_x) {
       moving_hand_direction = -1;
@@ -130,7 +130,7 @@ class TutorialPage {
 
     Rect hand_palm_rect;
     hand_palm_rect = Rect.fromLTWH(moving_hand_center_x, render_y,
-        screenSize.width * 0.11, screenSize.height * 0.075);
+        AppParams.gameSize[0] * 0.11, AppParams.gameSize[1] * 0.075);
     hand_palm_sprite.renderRect(canvas, hand_palm_rect);
   }
 
@@ -150,10 +150,11 @@ class TutorialPage {
     );
     textPainter.layout(
       minWidth: 0,
-      maxWidth: screenSize.width,
+      maxWidth: AppParams.gameSize[0],
     );
-    final offset = Offset((screenSize.width * 0.15) - (textPainter.width * 0.5),
-        screenSize.height * 0.325);
+    final offset = Offset(
+        (AppParams.gameSize[0] * 0.15) - (textPainter.width * 0.5),
+        AppParams.gameSize[1] * 0.325);
     textPainter.paint(canvas, offset);
   }
 
@@ -170,10 +171,11 @@ class TutorialPage {
     );
     textPainter.layout(
       minWidth: 0,
-      maxWidth: screenSize.width,
+      maxWidth: AppParams.gameSize[0],
     );
-    final offset = Offset((screenSize.width * 0.4 - (textPainter.width * 0.5)),
-        screenSize.height * 0.325);
+    final offset = Offset(
+        (AppParams.gameSize[0] * 0.4 - (textPainter.width * 0.5)),
+        AppParams.gameSize[1] * 0.325);
     textPainter.paint(canvas, offset);
   }
 
@@ -190,10 +192,11 @@ class TutorialPage {
     );
     textPainter.layout(
       minWidth: 0,
-      maxWidth: screenSize.width,
+      maxWidth: AppParams.gameSize[0],
     );
-    final offset = Offset((screenSize.width * 0.6) - (textPainter.width * 0.5),
-        screenSize.height * 0.325);
+    final offset = Offset(
+        (AppParams.gameSize[0] * 0.6) - (textPainter.width * 0.5),
+        AppParams.gameSize[1] * 0.325);
     textPainter.paint(canvas, offset);
   }
 
@@ -212,10 +215,11 @@ class TutorialPage {
     );
     textPainter.layout(
       minWidth: 0,
-      maxWidth: screenSize.width,
+      maxWidth: AppParams.gameSize[0],
     );
-    final offset = Offset((screenSize.width * 0.85) - (textPainter.width * 0.5),
-        screenSize.height * 0.35);
+    final offset = Offset(
+        (AppParams.gameSize[0] * 0.85) - (textPainter.width * 0.5),
+        AppParams.gameSize[1] * 0.35);
     textPainter.paint(canvas, offset);
   }
 
@@ -234,10 +238,11 @@ class TutorialPage {
     );
     textPainter.layout(
       minWidth: 0,
-      maxWidth: screenSize.width,
+      maxWidth: AppParams.gameSize[0],
     );
-    final offset = Offset((screenSize.width * 0.4) - (textPainter.width * 0.5),
-        screenSize.height * 0.35);
+    final offset = Offset(
+        (AppParams.gameSize[0] * 0.4) - (textPainter.width * 0.5),
+        AppParams.gameSize[1] * 0.35);
     textPainter.paint(canvas, offset);
   }
 
@@ -247,9 +252,9 @@ class TutorialPage {
   ///Render alerts
   /////////////////////////////////
   void render_alert_one(Canvas canvas) {
-    double render_x = screenSize.width * 0.125;
-    double render_y = screenSize.height * 0.3;
-    double radius = screenSize.height / 40;
+    double render_x = AppParams.gameSize[0] * 0.125;
+    double render_y = AppParams.gameSize[1] * 0.3;
+    double radius = AppParams.gameSize[1] / 40;
 
     final center = Offset(render_x, render_y);
     final paint = Paint();
@@ -273,9 +278,9 @@ class TutorialPage {
   }
 
   void render_alert_two(Canvas canvas) {
-    double render_x = screenSize.width * 0.375;
-    double render_y = screenSize.height * 0.3;
-    double radius = screenSize.height / 40;
+    double render_x = AppParams.gameSize[0] * 0.375;
+    double render_y = AppParams.gameSize[1] * 0.3;
+    double radius = AppParams.gameSize[1] / 40;
 
     final center = Offset(render_x, render_y);
 
@@ -301,9 +306,9 @@ class TutorialPage {
   }
 
   void render_alert_three(Canvas canvas) {
-    double render_x = screenSize.width * 0.6;
-    double render_y = screenSize.height * 0.3;
-    double radius = screenSize.height / 40;
+    double render_x = AppParams.gameSize[0] * 0.6;
+    double render_y = AppParams.gameSize[1] * 0.3;
+    double radius = AppParams.gameSize[1] / 40;
 
     final center = Offset(render_x, render_y);
 
@@ -327,9 +332,9 @@ class TutorialPage {
   }
 
   void render_alert_four(Canvas canvas) {
-    double render_x = screenSize.width * 0.85;
-    double render_y = screenSize.height * 0.3;
-    double radius = screenSize.height / 40;
+    double render_x = AppParams.gameSize[0] * 0.85;
+    double render_y = AppParams.gameSize[1] * 0.3;
+    double radius = AppParams.gameSize[1] / 40;
 
     final center = Offset(render_x, render_y);
 
@@ -340,8 +345,8 @@ class TutorialPage {
   }
 
   void render_middle_line(Canvas canvas) {
-    final p1 = Offset(0, screenSize.height * 0.7);
-    final p2 = Offset(screenSize.width, screenSize.height * 0.7);
+    final p1 = Offset(0, AppParams.gameSize[1] * 0.7);
+    final p2 = Offset(AppParams.gameSize[0], AppParams.gameSize[1] * 0.7);
     final paint = Paint()
       ..color = Colors.white24
       ..strokeWidth = 4;
@@ -351,8 +356,8 @@ class TutorialPage {
   //////////////////////////////////
 
   void render_upper_line(Canvas canvas) {
-    final p1 = Offset(0, screenSize.height * 0.2);
-    final p2 = Offset(screenSize.width, screenSize.height * 0.2);
+    final p1 = Offset(0, AppParams.gameSize[1] * 0.2);
+    final p2 = Offset(AppParams.gameSize[0], AppParams.gameSize[1] * 0.2);
     final paint = Paint()
       ..color = Colors.white24
       ..strokeWidth = 4;
@@ -362,8 +367,10 @@ class TutorialPage {
   void render_ayrim_line(Canvas canvas) {
     render_ayrim_line1(canvas);
     render_ayrim_line2(canvas);
-    final p1 = Offset(screenSize.width * 0.725, screenSize.height * 0.125);
-    final p2 = Offset(screenSize.width * 0.725, screenSize.height * 0.375);
+    final p1 =
+        Offset(AppParams.gameSize[0] * 0.725, AppParams.gameSize[1] * 0.125);
+    final p2 =
+        Offset(AppParams.gameSize[0] * 0.725, AppParams.gameSize[1] * 0.375);
     final paint = Paint()
       ..color = Colors.white24
       ..strokeWidth = 5;
@@ -371,8 +378,10 @@ class TutorialPage {
   }
 
   void render_ayrim_line1(Canvas canvas) {
-    final p1 = Offset(screenSize.width * 0.4875, screenSize.height * 0.14);
-    final p2 = Offset(screenSize.width * 0.4875, screenSize.height * 0.25);
+    final p1 =
+        Offset(AppParams.gameSize[0] * 0.4875, AppParams.gameSize[1] * 0.14);
+    final p2 =
+        Offset(AppParams.gameSize[0] * 0.4875, AppParams.gameSize[1] * 0.25);
     final paint = Paint()
       ..color = Colors.white24
       ..strokeWidth = 2;
@@ -380,8 +389,10 @@ class TutorialPage {
   }
 
   void render_ayrim_line2(Canvas canvas) {
-    final p1 = Offset(screenSize.width * 0.2625, screenSize.height * 0.14);
-    final p2 = Offset(screenSize.width * 0.2625, screenSize.height * 0.25);
+    final p1 =
+        Offset(AppParams.gameSize[0] * 0.2625, AppParams.gameSize[1] * 0.14);
+    final p2 =
+        Offset(AppParams.gameSize[0] * 0.2625, AppParams.gameSize[1] * 0.25);
     final paint = Paint()
       ..color = Colors.white24
       ..strokeWidth = 2;
@@ -392,7 +403,7 @@ class TutorialPage {
   void render_title(Canvas canvas) {
     final textStyle = TextStyle(
       color: Colors.cyan.shade100,
-      fontSize: screenSize.width * 0.075,
+      fontSize: AppParams.gameSize[0] * 0.075,
       fontWeight: FontWeight.w900,
     );
     final textSpan = TextSpan(
@@ -405,10 +416,11 @@ class TutorialPage {
     );
     textPainter.layout(
       minWidth: 0,
-      maxWidth: screenSize.width,
+      maxWidth: AppParams.gameSize[0],
     );
-    final offset = Offset((screenSize.width * 0.5) - (textPainter.width * 0.5),
-        screenSize.height * 0.075);
+    final offset = Offset(
+        (AppParams.gameSize[0] * 0.5) - (textPainter.width * 0.5),
+        AppParams.gameSize[1] * 0.075);
     textPainter.paint(canvas, offset);
   }
 }

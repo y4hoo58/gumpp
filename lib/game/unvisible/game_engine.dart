@@ -7,86 +7,74 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:gumpp/components/character.dart';
 import 'package:gumpp/components/sticks/sticks.dart';
-import 'package:gumpp/helpers/game_design.dart';
-import 'package:gumpp/helpers/physics_engine.dart';
+import 'package:gumpp/game/unvisible/game_design.dart';
+import 'package:gumpp/game/unvisible/physics_engine.dart';
 
 import 'package:gumpp/components/sticks/normal_sticks.dart';
 import 'package:gumpp/components/sticks/bonus_sticks.dart';
 import 'package:gumpp/components/sticks/inverse_sticks.dart';
 import 'package:gumpp/components/sticks/boosted_sticks.dart';
 import 'package:gumpp/tutorial_page.dart';
-import 'package:gumpp/helpers/game_render.dart';
+import 'package:gumpp/game/visible/game_render.dart';
+import 'package:gumpp/app_params.dart';
 
 class GameEngine {
-  Size screenSize;
-
   PhysicsEngine physicsEngine = PhysicsEngine();
   GameDesign gameDesign = GameDesign();
   GameRender gameRender = GameRender();
-
   TutorialPage tutorialPage;
-
-  //Player..
   MyCharacter myCharacter;
 
-  //Stores all of the sticks in an array.
   List<Stick> all_sticks = [];
 
   String current_game_mode = "";
-  String orientation;
 
-  int bestScore = 0;
   double y_hand, prediction_box_area;
 
   bool is_tutorial;
 
-  GameEngine(this.screenSize, this.orientation, this.tutorialPage) {
-    //GameEngine başlatma işlemlerini gerçekleştir.
+  GameEngine(this.tutorialPage) {
     init_game_engine();
-  }
-
-  //Her ekran ölçüleri değiştiğinde resize yap gameRender'da
-  void resize(Size screenSize) {
-    gameRender.setScreensize(screenSize);
   }
 
   //GameEngine başlatma işlemlerini gerçekleştir.
   //Önce stickleri başlat, daha sonra karakteri başlat.
   void init_game_engine() {
-    //Başlangıçta gameRender'ın render yapabilmesi için screenSize'ı yolla.
-    gameRender.setScreensize(screenSize);
     create_initial_sticks();
     create_character();
     gameRender.setParameters(all_sticks, current_game_mode, 0, myCharacter,
-        bestScore, y_hand, prediction_box_area);
+        y_hand, prediction_box_area);
   }
 
   //Başlangıç olarak 8 adet Normal Stick yerleştir ekrana.
   //TODO: Bu rakam değiştirilecek.
   void create_initial_sticks() {
     for (var i = 20; i > 0; i = i - 1) {
-      all_sticks.add(NormalStick(screenSize, i * screenSize.height / 25, 0));
+      all_sticks.add(NormalStick(i * AppParams.gameSize[1] / 25, 0));
     }
   }
 
   //Karakteri başlatma işlemini gerçekleştir.
   void create_character() {
-    myCharacter = MyCharacter(screenSize);
+    myCharacter = MyCharacter();
   }
 
-  List update(double t, double x_hand, double y_hand,
-      double prediction_box_area, int bestScore) {
+  List update(
+    double t,
+    double x_hand,
+    double y_hand,
+  ) {
     //Render işleminde kullanıldığı için global olarak (y_hand) ve
     //(prediction_box_area) değişkenlerinin değerlerinin tutulması gerekiyor.
     this.y_hand = y_hand;
-    this.prediction_box_area = prediction_box_area;
+    //this.prediction_box_area = prediction_box_area;
 
     //Bir önceki tur tamamlandıktan sonra (abs_char_offset)'i sıfırlamak lazım.
     //Bu turda bu değer sıfır kalabilir. Sıfır kalırsa ekran kaymaya devam etmesin.
     myCharacter.abs_char_offset = 0;
 
     //Karakteri güncelle.
-    myCharacter.update(t, x_hand, screenSize, current_game_mode);
+    myCharacter.update(t, x_hand, current_game_mode);
 
     //Stickleri güncelle
     update_sticks(t);
@@ -128,21 +116,15 @@ class GameEngine {
     //edildikten sonra gerçekleştiriliyor.
     bool is_char_died = myCharacter.is_char_died();
 
-    gameRender.setParameters(
-        all_sticks,
-        current_game_mode,
-        gameDesign.total_points,
-        myCharacter,
-        bestScore,
-        y_hand,
-        prediction_box_area);
+    gameRender.setParameters(all_sticks, current_game_mode,
+        gameDesign.total_points, myCharacter, y_hand, prediction_box_area);
 
     if (is_char_died) {
       if (is_tutorial) {
         if (gameDesign.total_points > 10000) {
           return [true, 0];
         } else {
-          myCharacter.y_speed = screenSize.height * 0.2;
+          myCharacter.y_speed = AppParams.gameSize[1] * 0.2;
           tutorialPage.moving_hand_timer = 2;
           //Tutorial ekranında ölme gerçekleşmeyecek.
           //TODO: bu ölme işlemini burayı düzenleyerek bir kurala/skora/süreye bağla.
@@ -169,23 +151,23 @@ class GameEngine {
       double spawn_y_fac = gameDesign.calc_spawn_y_fac();
 
       spawn_y = all_sticks[all_sticks.length - 1].center_y -
-          screenSize.height * spawn_y_fac;
+          AppParams.gameSize[1] * spawn_y_fac;
 
       //Spawnlanacak stick'in hareket edip etmeyeceğini
       //ve eğer edicekse hızını GameDesign aracılığıyla belirle.
-      double stick_speed = gameDesign.calc_stick_speed(screenSize.width);
+      double stick_speed = gameDesign.calc_stick_speed(AppParams.gameSize[0]);
 
       //Oyunun durumuna bağlı olarak GameDesign'ın bir stick çeşidi seçmesini iste.
       //Daha sonra stick'i listeye ekle.
       String stick_type = gameDesign.select_stick_type();
       if (stick_type == "normal") {
-        all_sticks.add(NormalStick(screenSize, spawn_y, stick_speed));
+        all_sticks.add(NormalStick(spawn_y, stick_speed));
       } else if (stick_type == "bonus") {
-        all_sticks.add(BonusStick(screenSize, spawn_y, stick_speed));
+        all_sticks.add(BonusStick(spawn_y, stick_speed));
       } else if (stick_type == "boosted") {
-        all_sticks.add(BoostedStick(screenSize, spawn_y, stick_speed));
+        all_sticks.add(BoostedStick(spawn_y, stick_speed));
       } else {
-        all_sticks.add(InverseStick(screenSize, spawn_y, stick_speed));
+        all_sticks.add(InverseStick(spawn_y, stick_speed));
       }
     }
   }
@@ -224,7 +206,7 @@ class GameEngine {
     if (current_game_mode == "") {
       for (var i = 0; i < all_sticks.length; i++) {
         all_sticks[i].center_x =
-            (screenSize.width - all_sticks[i].center_x).abs();
+            (AppParams.gameSize[0] - all_sticks[i].center_x).abs();
         if (all_sticks[i].direction == 1) {
           all_sticks[i].direction = -1;
         } else {
@@ -235,7 +217,7 @@ class GameEngine {
     } else if (current_game_mode == "inverse_mode") {
       for (var i = 0; i < all_sticks.length; i++) {
         all_sticks[i].center_x =
-            (screenSize.width - all_sticks[i].center_x).abs();
+            (AppParams.gameSize[0] - all_sticks[i].center_x).abs();
         if (all_sticks[i].direction == 1) {
           all_sticks[i].direction = -1;
         } else {
@@ -253,7 +235,8 @@ class GameEngine {
     var rng = Random();
     for (var i = 0; i < all_sticks.length; i++) {
       all_sticks[i].center_x = rng
-              .nextInt((screenSize.width - (2 * all_sticks[i].width)).floor())
+              .nextInt(
+                  (AppParams.gameSize[0] - (2 * all_sticks[i].width)).floor())
               .toDouble() +
           (all_sticks[i].width);
     }

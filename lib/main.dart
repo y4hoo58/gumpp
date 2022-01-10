@@ -1,11 +1,11 @@
 // ignore_for_file: non_constant_identifier_names
 
-import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 
-import 'package:flame/util.dart';
 import 'package:flame/flame.dart';
+
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+
 import 'package:tflite_flutter/tflite_flutter.dart';
 
 import 'package:gumpp/jump_game.dart';
@@ -15,21 +15,6 @@ import 'package:gumpp/widgets/title.dart';
 import 'package:gumpp/widgets/menu_painter.dart';
 
 int bestScore = 0;
-
-//NOT: Gamewidget'a atarken hata var
-//NOT: Gamewidget'a atarken hata var//NOT: Gamewidget'a atarken hata var//NOT: Gamewidget'a atarken hata var
-//NOT: Gamewidget'a atarken hata var
-//NOT: Gamewidget'a atarken hata var
-//NOT: Gamewidget'a atarken hata var
-//NOT: Gamewidget'a atarken hata var
-//NOT: Gamewidget'a atarken hata var
-
-//NOT: Gamewidget'a atarken hata var
-//NOT: Gamewidget'a atarken hata var
-//NOT: Gamewidget'a atarken hata var
-//NOT: Gamewidget'a atarken hata var
-//NOT: Gamewidget'a atarken hata var
-//NOT: Gamewidget'a atarken hata var
 
 //Create jumpgame object
 JumpGame jumpGame = JumpGame();
@@ -91,20 +76,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   void init() async {
     WidgetsFlutterBinding.ensureInitialized();
-    Util flameUtil = Util();
-    await flameUtil.fullScreen();
-    await flameUtil.setOrientation(DeviceOrientation.portraitUp);
-
-    //Load all stick images at startup.
-    Flame.images.loadAll(<String>[
-      'too_close.png',
-      'too_up.png',
-      'too_down.png',
-      'correct.png',
-      'hand_palm.png',
-      'back_cam_img.png',
-      'front_cam_img.png',
-    ]);
+    await Flame.device.fullScreen();
+    await Flame.device.setPortraitUpOnly();
   }
 
   //TODO

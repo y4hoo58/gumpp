@@ -29,7 +29,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flame: ^0.29.4
+  flame: ^1.0.0
   camera: ^0.9.4+5
   tflite_flutter: ^0.9.0
   image: ^3.0.2

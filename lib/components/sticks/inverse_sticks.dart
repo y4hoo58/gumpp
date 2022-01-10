@@ -5,23 +5,24 @@ import 'dart:math';
 import 'package:gumpp/components/game_constants.dart';
 import 'package:gumpp/components/sticks/sticks.dart';
 
+import 'package:gumpp/app_params.dart';
+
 class InverseStick extends Stick {
   double spawn_y, stick_speed;
 
-  InverseStick(screenSize, this.spawn_y, this.stick_speed)
-      : super(screenSize, "inverse") {
+  InverseStick(this.spawn_y, this.stick_speed) : super("inverse") {
     set_stick_properties();
   }
 
   void set_stick_properties() {
-    width = screenSize.width * stick_width_fac;
-    height = screenSize.height * stick_height_fac;
-    org_width = screenSize.width * stick_width_fac;
-    org_height = screenSize.height * stick_height_fac;
+    width = AppParams.gameSize[0] * stick_width_fac;
+    height = AppParams.gameSize[1] * stick_height_fac;
+    org_width = AppParams.gameSize[0] * stick_width_fac;
+    org_height = AppParams.gameSize[1] * stick_height_fac;
     //Spawning x coordinates  of a stick always random.
     var rng = Random();
     center_x =
-        rng.nextInt((screenSize.width - (1 * width)).floor()).toDouble() +
+        rng.nextInt((AppParams.gameSize[0] - (1 * width)).floor()).toDouble() +
             (width * stick_center_x_fac);
     //What y coordinate to spawn the stick?
     center_y = spawn_y;

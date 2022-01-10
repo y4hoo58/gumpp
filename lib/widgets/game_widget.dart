@@ -12,7 +12,7 @@ class GameWidget extends StatelessWidget {
   void initStateless() {
     jumpGame.condition = "full initialization";
     jumpGame.orientation = camm;
-    print(camm);
+
     jumpGame.bestScore = bestScore;
   }
 

@@ -5,24 +5,25 @@ import 'dart:math';
 import 'package:gumpp/components/game_constants.dart';
 import 'package:gumpp/components/sticks/sticks.dart';
 
+import 'package:gumpp/app_params.dart';
+
 class BoostedStick extends Stick {
   double spawn_y, stick_speed;
 
-  BoostedStick(screenSize, this.spawn_y, this.stick_speed)
-      : super(screenSize, "boosted") {
+  BoostedStick(this.spawn_y, this.stick_speed) : super("boosted") {
     set_stick_properties();
   }
 
   //Set stick properties in the initialization..
   void set_stick_properties() {
-    width = screenSize.width * stick_width_fac;
-    height = screenSize.height * stick_height_fac;
-    org_width = screenSize.width * stick_width_fac;
-    org_height = screenSize.height * stick_height_fac;
+    width = AppParams.gameSize[0] * stick_width_fac;
+    height = AppParams.gameSize[1] * stick_height_fac;
+    org_width = AppParams.gameSize[0] * stick_width_fac;
+    org_height = AppParams.gameSize[1] * stick_height_fac;
     //Spawning x coordinates  of a stick always random.
     var rng = Random();
     center_x =
-        rng.nextInt((screenSize.width - (1 * width)).floor()).toDouble() +
+        rng.nextInt((AppParams.gameSize[0] - (1 * width)).floor()).toDouble() +
             (width * stick_center_x_fac);
 
     //What y coordinate to spawn the stick?

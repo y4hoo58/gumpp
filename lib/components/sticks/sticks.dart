@@ -4,9 +4,9 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-class Stick {
-  Size screenSize;
+import 'package:gumpp/app_params.dart';
 
+class Stick {
   Rect stick_rect;
 
   double center_x, center_y, width, height;
@@ -17,7 +17,7 @@ class Stick {
 
   String stick_type;
 
-  Stick(this.screenSize, this.stick_type);
+  Stick(this.stick_type);
 
   //Renders the stick.
   void render(Canvas canvas) {
@@ -60,8 +60,8 @@ class Stick {
     }
     if (x_speed != null) {
       if (direction == 1) {
-        if (center_x + (width / 2) + (x_speed * t) >= screenSize.width) {
-          center_x = screenSize.width - (width / 2);
+        if (center_x + (width / 2) + (x_speed * t) >= AppParams.gameSize[0]) {
+          center_x = AppParams.gameSize[0] - (width / 2);
           direction = -1;
         } else {
           center_x = center_x + x_speed * t;
@@ -75,7 +75,7 @@ class Stick {
         }
       }
     }
-    if (center_y > screenSize.height) {
+    if (center_y > AppParams.gameSize[1]) {
       return true;
     } else {
       return false;

@@ -6,9 +6,9 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:gumpp/components/game_constants.dart';
 
-class MyCharacter {
-  Size screenSize;
+import 'package:gumpp/app_params.dart';
 
+class MyCharacter {
   double radius, center_x, center_y;
   double old_center_x, old_center_y, old_y_speed;
   double x_speed, y_speed;
@@ -19,20 +19,20 @@ class MyCharacter {
 
   Paint paint = Paint();
 
-  MyCharacter(this.screenSize) {
+  MyCharacter() {
     init_character();
   }
 
   //Initializes character..
   void init_character() {
     //TODO: Yerini değiştir
-    gravity = screenSize.height * gravity_fac;
+    gravity = AppParams.gameSize[1] * gravity_fac;
 
     //Create the character variables and constants..
-    radius = char_radius_fac * screenSize.width;
-    center_x = char_center_x_fac * screenSize.width;
-    center_y = char_center_y_fac * screenSize.height;
-    y_speed = char_port_y_speed_fac * screenSize.height;
+    radius = char_radius_fac * AppParams.gameSize[0];
+    center_x = char_center_x_fac * AppParams.gameSize[0];
+    center_y = char_center_y_fac * AppParams.gameSize[1];
+    y_speed = char_port_y_speed_fac * AppParams.gameSize[1];
     game_mode_factor = 1;
 
     //Old variables. Used for colliding detection.
@@ -44,20 +44,20 @@ class MyCharacter {
     ///TODO: game_mode_factor kontrol edilecek.
   }
 
-  void update(double t, double x_hand, Size screenSize, String game_mode) {
+  void update(double t, double x_hand, String game_mode) {
     //TODO : Burayı yeniden kontrol et.
     // Eğer x_hand nullsa, karakter aynı yerinde kalsın herhangi bir yöne hareket etmesin.
     // Daha sonraki evrelerde bu kısım bir miktar geliştirilebilir ve bir prediction ile
     // başka bir değer atanabilir.
 
     if (x_hand != null) {
-      update_center_x(x_hand, screenSize, game_mode);
+      update_center_x(x_hand, game_mode);
     } else {
-      update_center_x(center_x, screenSize, game_mode);
+      update_center_x(center_x, game_mode);
     }
 
     //Update center y
-    update_center_y(t, screenSize);
+    update_center_y(t);
 
     check_if_above_centerline();
 
@@ -65,12 +65,12 @@ class MyCharacter {
     is_char_died();
   }
 
-  void update_center_x(double x_hand, Size screenSize, String game_mode) {
+  void update_center_x(double x_hand, String game_mode) {
     //Old center x. Used for colliding detection.
     old_center_x = center_x;
 
     //Current location as float.
-    double x_float = center_x / screenSize.width;
+    double x_float = center_x / AppParams.gameSize[0];
 
     if (game_mode == "inverse_mode") {
       x_hand = (1 - x_hand).abs();
@@ -87,17 +87,17 @@ class MyCharacter {
     }
 
     //New center x.
-    center_x = x_float * screenSize.width;
+    center_x = x_float * AppParams.gameSize[0];
 
     //Prevent going out of screen.
-    if (center_x >= (screenSize.width - (radius))) {
-      center_x = screenSize.width - (radius);
+    if (center_x >= (AppParams.gameSize[0] - (radius))) {
+      center_x = AppParams.gameSize[0] - (radius);
     } else if (center_x <= ((radius))) {
       center_x = (radius);
     }
   }
 
-  void update_center_y(double t, Size screenSize) {
+  void update_center_y(double t) {
     //Old vertical speed. Used for colliding detection.
     old_y_speed = y_speed;
 
@@ -116,16 +116,16 @@ class MyCharacter {
 
   void check_if_above_centerline() {
     //Check if over the half of the screen.
-    if (center_y <= screenSize.height / 2) {
-      abs_char_offset = (screenSize.height / 2) - center_y;
+    if (center_y <= AppParams.gameSize[1] * 0.5) {
+      abs_char_offset = (AppParams.gameSize[1] * 0.5) - center_y;
       //Prevent going over the half of the screen.
-      center_y = screenSize.height / 2;
+      center_y = AppParams.gameSize[1] * 0.5;
     }
   }
 
   bool is_char_died() {
     //Kill if below the screen.
-    if ((center_y - radius) > screenSize.height) {
+    if ((center_y - radius) > AppParams.gameSize[1]) {
       return true;
     } else {
       return false;
@@ -136,17 +136,17 @@ class MyCharacter {
   String bounce_the_ball(double y_correction, String stick_type) {
     center_y = center_y + y_correction;
     if (stick_type == "boosted") {
-      y_speed = screenSize.height * char_port_y_speed_boost_fac;
+      y_speed = AppParams.gameSize[1] * char_port_y_speed_boost_fac;
       return "";
     } else if (stick_type == "inverse") {
-      y_speed = screenSize.height * char_port_y_speed_fac;
+      y_speed = AppParams.gameSize[1] * char_port_y_speed_fac;
 
       return "reversity";
     } else if (stick_type == "bonus") {
-      y_speed = screenSize.height * char_port_y_speed_fac;
+      y_speed = AppParams.gameSize[1] * char_port_y_speed_fac;
       return "randomize";
     } else {
-      y_speed = screenSize.height * char_port_y_speed_fac;
+      y_speed = AppParams.gameSize[1] * char_port_y_speed_fac;
       return "";
     }
   }

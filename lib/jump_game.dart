@@ -2,20 +2,20 @@
 
 import 'package:flutter/material.dart';
 
-import 'package:flame/gestures.dart';
 import 'package:flame/game.dart';
+import 'package:flame/input.dart';
 
 import 'package:is_first_run/is_first_run.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 
 import 'package:gumpp/helpers/shared_preferences_helper.dart';
-import 'package:gumpp/helpers/game_engine.dart';
-import 'package:gumpp/helpers/hand_detection.dart';
+import 'package:gumpp/game/unvisible/game_engine.dart';
+import 'package:gumpp/helpers/hand_detection/hand_detection.dart';
 import 'package:gumpp/tutorial_page.dart';
 
-class JumpGame extends BaseGame with TapDetector {
-  Size screenSize;
+import 'package:gumpp/app_params.dart';
 
+class JumpGame extends FlameGame with TapDetector {
   GameEngine gameEngine;
 
   HandDetection handDetection;
@@ -24,7 +24,9 @@ class JumpGame extends BaseGame with TapDetector {
 
   Function onLose = () {};
 
-  JumpGame() {}
+  JumpGame() {
+    init_game();
+  }
 
   String condition = "full initialization";
   String orientation;
@@ -38,21 +40,7 @@ class JumpGame extends BaseGame with TapDetector {
 
   Interpreter interpreter;
 
-  @override
-  void resize(Size size) {
-    screenSize = size;
-    init_game();
-    //Ekran boyutu değişirse gamerender'a da haber uçur
-    //if (gameEngine != null) {
-    //  gameEngine.resize(screenSize);
-    //}
-    super.resize(size);
-  }
-
-  //Her resize'da çağrılır..
   void init_game() async {
-    //show_tutorial();
-
     //Eğer is_tutorial "null" ise uygulamanın ilk kez kullanılıp kullanılmadığına bakıyor.
     //Ancak eğer is_tutorial "true" ise, zaten bir el oyun oynanmış demektir bu yüzden
     //is_tutorial "true"'dur. Bu yüzden retry tuşuna basıldığı zaman tutorial ekranının
@@ -62,22 +50,16 @@ class JumpGame extends BaseGame with TapDetector {
     } else if (is_tutorial == true) {
       is_tutorial = false;
     }
-    //TODO: Bir alt satırı sil
-    is_tutorial = true;
+
     if (is_tutorial == true) {
-      tutorialPage = TutorialPage(screenSize);
+      tutorialPage = TutorialPage();
     }
 
     if (condition == "full initialization") {
-      await Future.delayed(Duration(milliseconds: 500));
-      //GameEngine'i başlat ve tutorial ekranı olup olmadığına dair bilgilendir.
-      gameEngine = GameEngine(screenSize, orientation, tutorialPage);
+      gameEngine = GameEngine(tutorialPage);
       gameEngine.is_tutorial = is_tutorial;
 
-      //HandDetection'ı başlat ve interpreter'ı yolla.
-      handDetection = HandDetection(orientation);
-      handDetection.interpreter = interpreter;
-      handDetection.initialization();
+      handDetection = HandDetection();
 
       //Tap screen'den sonra her şeyin iyice başladığından emin olmak için
       //2 saniye gibi bir süre beklenmesi gerekiyor.
@@ -88,7 +70,7 @@ class JumpGame extends BaseGame with TapDetector {
       condition = "initialized";
     } else if (condition == "lite initialization") {
       //GameEngine'i başlat ve tutorial ekranı olup olmadığına dair bilgilendir.
-      gameEngine = GameEngine(screenSize, orientation, tutorialPage);
+      gameEngine = GameEngine(tutorialPage);
       gameEngine.is_tutorial = is_tutorial;
 
       //Kamera stop'da olduğu ve daha önce handDetection başlatıldığı için
@@ -102,9 +84,6 @@ class JumpGame extends BaseGame with TapDetector {
       //Çünkü kullanıcı retry tuşuna bastı.
       condition = "playing";
     }
-    //TODO: burada çok alakasız durdu sanki?
-
-    gameEngine.resize(screenSize);
   }
 
   @override
@@ -114,15 +93,15 @@ class JumpGame extends BaseGame with TapDetector {
     } else if (condition == "game finished") {
       //TODO: buradaki aralığı tam retry text boyutlarına göre ayarla
       double tap_y = tapUpDetails.globalPosition.dy;
-      if (tap_y > screenSize.height * 0.69 &&
-          tap_y < screenSize.height * 0.79) {
+      if (tap_y > AppParams.gameSize[1] * 0.69 &&
+          tap_y < AppParams.gameSize[1] * 0.79) {
         //Retry atılacağı için durumu restart game olarak değiştir.
         condition = "lite initialization";
 
         //Başlatma işlemini tekrardan yap.
         init_game();
-      } else if (tap_y > screenSize.height * 0.84 &&
-          tap_y < screenSize.height * 0.95) {
+      } else if (tap_y > AppParams.gameSize[1] * 0.84 &&
+          tap_y < AppParams.gameSize[1] * 0.95) {
         delete_game();
       }
     }
@@ -146,7 +125,8 @@ class JumpGame extends BaseGame with TapDetector {
             t,
             handDetection.x_hand,
             handDetection.y_hand,
-            handDetection.prediction_box_area,
+            //TODO: prediction_box_area yeniden eklenecek
+            //handDetection.prediction_box_area,
             renderScore);
 
         if (gameList[1].round() > renderScore) {
@@ -176,7 +156,7 @@ class JumpGame extends BaseGame with TapDetector {
       const Duration(milliseconds: 25),
     );
 
-    handDetection.dispose_camera();
+    handDetection.disposeDetectionLoop();
 
     handDetection = null;
     await Future.delayed(

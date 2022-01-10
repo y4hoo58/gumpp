@@ -4,27 +4,24 @@ import 'package:gumpp/components/character.dart';
 import 'package:gumpp/components/sticks/sticks.dart';
 import 'package:gumpp/helpers/shared_preferences_helper.dart';
 
+import 'package:gumpp/app_params.dart';
+
 class GameRender {
   String current_game_mode;
 
   List<Stick> all_sticks;
   MyCharacter myCharacter;
 
-  Size screenSize;
-
   double y_hand;
   double prediction_box_area;
   double total_points = 0;
 
-  int bestScore;
+  int bestScore = AppParams.bestScore;
 
   //TODO: Her seferinde tekrar tekrar screensize geçmek yerine
   //tek seferde yap
   GameRender() {
     load_bestScore();
-  }
-  void setScreensize(Size screenSize) {
-    this.screenSize = screenSize;
   }
 
   void load_bestScore() async {
@@ -40,14 +37,12 @@ class GameRender {
       String current_game_mode,
       double total_points,
       MyCharacter myCharacter,
-      int bestScore,
       double y_hand,
       double prediction_box_area) {
     this.all_sticks = all_sticks;
     this.current_game_mode = current_game_mode;
     this.total_points = total_points;
     this.myCharacter = myCharacter;
-    this.bestScore = bestScore;
     this.y_hand = y_hand;
     this.prediction_box_area = prediction_box_area;
   }
@@ -86,8 +81,8 @@ class GameRender {
     final bgRect = Rect.fromLTWH(
       0,
       0,
-      screenSize.width,
-      screenSize.height,
+      AppParams.gameSize[0],
+      AppParams.gameSize[1],
     );
     final bgPaint = Paint();
 
@@ -115,8 +110,8 @@ class GameRender {
     final bgRect = Rect.fromLTWH(
       0,
       0,
-      screenSize.width,
-      screenSize.height,
+      AppParams.gameSize[0],
+      AppParams.gameSize[1],
     );
     final bgPaint = Paint();
     bgPaint.color = Colors.black87;
@@ -127,7 +122,7 @@ class GameRender {
   void render_score_text(Canvas canvas) {
     final textStyle = TextStyle(
         color: Colors.cyan.shade100,
-        fontSize: screenSize.width * 0.09,
+        fontSize: AppParams.gameSize[0] * 0.09,
         fontWeight: FontWeight.w700);
 
     final textSpan = TextSpan(
@@ -141,11 +136,12 @@ class GameRender {
 
     textPainter.layout(
       minWidth: 0,
-      maxWidth: screenSize.width,
+      maxWidth: AppParams.gameSize[0],
     );
 
-    final textOffset = Offset((screenSize.width / 2) - textPainter.width / 2,
-        screenSize.height * 0.375);
+    final textOffset = Offset(
+        (AppParams.gameSize[0] * 0.5) - textPainter.width / 2,
+        AppParams.gameSize[1] * 0.375);
     textPainter.paint(canvas, textOffset);
 
     ///KONTROL EDİLDİ
@@ -155,7 +151,7 @@ class GameRender {
   void render_score(Canvas canvas, opacityy) {
     final textStyle = TextStyle(
         color: Colors.cyan.shade100.withOpacity(opacityy),
-        fontSize: screenSize.width * 0.2,
+        fontSize: AppParams.gameSize[0] * 0.2,
         fontWeight: FontWeight.w900);
 
     final textSpan = TextSpan(
@@ -168,10 +164,11 @@ class GameRender {
     );
     textPainter.layout(
       minWidth: 0,
-      maxWidth: screenSize.width,
+      maxWidth: AppParams.gameSize[0],
     );
-    final textOffset = Offset((screenSize.width / 2) - textPainter.width / 2,
-        (screenSize.height / 2) - textPainter.height / 2);
+    final textOffset = Offset(
+        (AppParams.gameSize[0] * 0.5) - textPainter.width / 2,
+        (AppParams.gameSize[1] / 2) - textPainter.height / 2);
     textPainter.paint(canvas, textOffset);
   }
 
@@ -179,7 +176,7 @@ class GameRender {
   void render_retry_button(Canvas canvas) {
     final textStyle = TextStyle(
         color: Colors.black,
-        fontSize: screenSize.width * 0.1,
+        fontSize: AppParams.gameSize[0] * 0.1,
         fontWeight: FontWeight.w900);
 
     final textSpan = TextSpan(
@@ -192,16 +189,17 @@ class GameRender {
     );
     textPainter.layout(
       minWidth: 0,
-      maxWidth: screenSize.width,
+      maxWidth: AppParams.gameSize[0],
     );
-    final textOffset = Offset((screenSize.width / 2) - textPainter.width / 2,
-        screenSize.height * 0.7);
+    final textOffset = Offset(
+        (AppParams.gameSize[0] * 0.5) - textPainter.width / 2,
+        AppParams.gameSize[1] * 0.7);
 
     final bgRect = Rect.fromLTWH(
-      (screenSize.width * 0.25),
-      screenSize.height * 0.69,
-      screenSize.width * 0.5,
-      screenSize.height * 0.075,
+      (AppParams.gameSize[0] * 0.25),
+      AppParams.gameSize[1] * 0.69,
+      AppParams.gameSize[0] * 0.5,
+      AppParams.gameSize[1] * 0.075,
     );
 
     //Button background color.
@@ -218,7 +216,7 @@ class GameRender {
   void render_menu_button(Canvas canvas) {
     final textStyle = TextStyle(
         color: Colors.black,
-        fontSize: screenSize.width * 0.1,
+        fontSize: AppParams.gameSize[0] * 0.1,
         fontWeight: FontWeight.w900);
 
     final textSpan = TextSpan(
@@ -232,17 +230,18 @@ class GameRender {
 
     textPainter.layout(
       minWidth: 0,
-      maxWidth: screenSize.width,
+      maxWidth: AppParams.gameSize[0],
     );
 
-    final textOffset = Offset((screenSize.width / 2) - textPainter.width / 2,
-        screenSize.height * 0.85);
+    final textOffset = Offset(
+        (AppParams.gameSize[0] * 0.5) - textPainter.width / 2,
+        AppParams.gameSize[1] * 0.85);
 
     final bgRect = Rect.fromLTWH(
-      (screenSize.width * 0.25),
-      screenSize.height * 0.84,
-      screenSize.width * 0.5,
-      screenSize.height * 0.075,
+      (AppParams.gameSize[0] * 0.25),
+      AppParams.gameSize[1] * 0.84,
+      AppParams.gameSize[0] * 0.5,
+      AppParams.gameSize[1] * 0.075,
     );
 
     //Button background color.
@@ -260,7 +259,7 @@ class GameRender {
     //Render best text.
     final bestStyle = TextStyle(
         color: Colors.cyan.shade100,
-        fontSize: screenSize.width * 0.1,
+        fontSize: AppParams.gameSize[0] * 0.1,
         fontWeight: FontWeight.w900);
 
     final bestSpan = TextSpan(
@@ -273,9 +272,10 @@ class GameRender {
     );
     bestPainter.layout(
       minWidth: 0,
-      maxWidth: screenSize.width,
+      maxWidth: AppParams.gameSize[0],
     );
-    final bestOffset = Offset((screenSize.width / 2) - bestPainter.width / 2,
+    final bestOffset = Offset(
+        (AppParams.gameSize[0] * 0.5) - bestPainter.width / 2,
         bestPainter.height * 1.25);
 
     bestPainter.paint(canvas, bestOffset);
@@ -283,7 +283,7 @@ class GameRender {
     //Render score text.
     final scoreStyle = TextStyle(
         color: Colors.cyan.shade100,
-        fontSize: screenSize.width * 0.1,
+        fontSize: AppParams.gameSize[0] * 0.1,
         fontWeight: FontWeight.w200);
 
     //TODO: Best score kaydetmeyi ayarladığın zaman burayı düzeltmeyi unutma.
@@ -298,9 +298,10 @@ class GameRender {
     );
     scorePainter.layout(
       minWidth: 0,
-      maxWidth: screenSize.width,
+      maxWidth: AppParams.gameSize[0],
     );
-    final scoreOffset = Offset((screenSize.width / 2) - scorePainter.width / 2,
+    final scoreOffset = Offset(
+        (AppParams.gameSize[0] * 0.5) - scorePainter.width / 2,
         bestPainter.height * 1.25 + scorePainter.height);
     scorePainter.paint(canvas, scoreOffset);
 
@@ -311,7 +312,7 @@ class GameRender {
   void render_tap_screen(Canvas canvas) {
     final textStyle = TextStyle(
         color: Colors.cyan.shade100,
-        fontSize: screenSize.width * 0.1,
+        fontSize: AppParams.gameSize[0] * 0.1,
         fontWeight: FontWeight.w900);
 
     final textSpan = TextSpan(
@@ -326,15 +327,17 @@ class GameRender {
 
     textPainter.layout(
       minWidth: 0,
-      maxWidth: screenSize.width,
+      maxWidth: AppParams.gameSize[0],
     );
 
     //Text locations
-    final offset = Offset((screenSize.width / 2) - (textPainter.width / 2),
-        (screenSize.height / 2) - (textPainter.height / 2));
+    final offset = Offset(
+        (AppParams.gameSize[0] * 0.5) - (AppParams.gameSize[0] * 0.5),
+        (AppParams.gameSize[1] * 0.5) - (textPainter.height / 2));
 
     //Draw background.
-    final bgRect = Rect.fromLTWH(0, 0, (screenSize.width), (screenSize.height));
+    final bgRect =
+        Rect.fromLTWH(0, 0, (AppParams.gameSize[0]), (AppParams.gameSize[1]));
     final bgPaint = Paint();
     bgPaint.color = Colors.black87;
     canvas.drawRect(bgRect, bgPaint);

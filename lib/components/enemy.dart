@@ -1,14 +1,14 @@
 // ignore_for_file: non_constant_identifier_names
 
-import 'dart:ui';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 
 import 'package:gumpp/components/game_constants.dart';
 
+import 'package:gumpp/app_params.dart';
+
 class Enemy {
-  Size screenSize;
   Paint paint;
 
   double center_x, center_y, radius;
@@ -18,7 +18,7 @@ class Enemy {
 
   bool is_died = false;
 
-  Enemy(this.screenSize) {
+  Enemy() {
     init_enemy();
   }
 
@@ -34,12 +34,12 @@ class Enemy {
   }
 
   void init_enemy() {
-    radius = char_radius_fac * screenSize.width;
+    radius = char_radius_fac * AppParams.gameSize[0];
 
     var rng = Random();
-    center_x =
-        rng.nextInt((screenSize.width - (radius / 2)).floor()) + (radius / 2);
+    center_x = rng.nextInt((AppParams.gameSize[0] - (radius / 2)).floor()) +
+        (radius / 2);
 
-    center_y = rng.nextInt((screenSize.width / 5).floor()).toDouble();
+    center_y = rng.nextInt((AppParams.gameSize[1] / 5).floor()).toDouble();
   }
 }
