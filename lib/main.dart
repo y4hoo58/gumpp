@@ -8,6 +8,8 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'package:tflite_flutter/tflite_flutter.dart';
 
+import 'package:is_first_run/is_first_run.dart';
+
 import 'package:gumpp/app_params.dart';
 import 'package:gumpp/helpers/shared_preferences_helper.dart';
 import 'package:gumpp/widgets/playbutton.dart';
@@ -39,15 +41,13 @@ class HomeScreen extends StatefulWidget {
 
 //Homescreen state
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
-  Interpreter _interpreter;
-  //Loads the tflite model.
-
   @override
   void initState() {
     init();
     load_model();
     _initGoogleMobileAds();
     load_bestScore();
+    checkIfTutorial();
     super.initState();
   }
 
@@ -58,6 +58,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   void load_model() async {
+    Interpreter _interpreter;
     var interpreterOptions = InterpreterOptions()..useNnApiForAndroid = true;
 
     _interpreter = await Interpreter.fromAsset('palm_detection.tflite',
@@ -81,6 +82,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       set_bestScore(bestScore);
     }
     AppParams.bestScore = bestScore;
+  }
+
+  void checkIfTutorial() async {
+    AppParams.isTutorial ??= await IsFirstRun.isFirstRun();
   }
 
   void set_bestScore(int best_score) async {

@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 
-import 'package:is_first_run/is_first_run.dart';
-
 import 'package:gumpp/app_params.dart';
 import 'package:gumpp/helpers/shared_preferences_helper.dart';
 import 'package:gumpp/game/unvisible/game_engine.dart';
@@ -16,7 +14,6 @@ class JumpGame extends FlameGame with TapDetector {
   GameEngine gameEngine;
   HandDetection handDetection;
 
-  int bestScore = 0;
   double initialWait = 2;
 
   Function onLose = () {};
@@ -26,17 +23,10 @@ class JumpGame extends FlameGame with TapDetector {
   }
 
   void initGame() async {
-    await checkIfTutorial();
-
     gameEngine = GameEngine();
 
     handDetection = HandDetection();
     handDetection.initialization();
-  }
-
-  //TODO: main'e taşınacak.
-  void checkIfTutorial() async {
-    AppParams.isTutorial ??= await IsFirstRun.isFirstRun();
   }
 
   @override

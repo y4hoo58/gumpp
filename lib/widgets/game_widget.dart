@@ -9,12 +9,7 @@ class MyGameWidget extends StatelessWidget {
   int bestScore;
 
   MyGameWidget() {
-    initStateless();
     setGongParams();
-  }
-
-  void initStateless() {
-    jumpGame.bestScore = bestScore;
   }
 
   void setGongParams() {
