@@ -8,16 +8,13 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'package:tflite_flutter/tflite_flutter.dart';
 
-import 'package:gumpp/jump_game.dart';
+import 'package:gumpp/app_params.dart';
 import 'package:gumpp/helpers/shared_preferences_helper.dart';
 import 'package:gumpp/widgets/playbutton.dart';
 import 'package:gumpp/widgets/title.dart';
 import 'package:gumpp/widgets/menu_painter.dart';
 
 int bestScore = 0;
-
-//Create jumpgame object
-JumpGame jumpGame = JumpGame();
 
 //Main function
 void main() async {
@@ -71,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         options: interpreterOptions);
     _interpreter.allocateTensors();
 
-    jumpGame.interpreter = _interpreter;
+    AppParams.interpreterAddress = _interpreter.address;
   }
 
   void init() async {
@@ -96,6 +93,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    AppParams.gameSize = [
+      MediaQuery.of(context).size.width,
+      MediaQuery.of(context).size.height,
+    ];
     return Material(
       color: Colors.black,
       child: Stack(children: <Widget>[

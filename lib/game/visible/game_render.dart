@@ -325,8 +325,8 @@ class GameRender {
 
     //Text locations
     final offset = Offset(
-        (AppParams.gameSize[0] * 0.5) - (AppParams.gameSize[0] * 0.5),
-        (AppParams.gameSize[1] * 0.5) - (textPainter.height / 2));
+        (AppParams.gameSize[0] * 0.5) - (textPainter.width * 0.5),
+        (AppParams.gameSize[1] * 0.5) - (textPainter.height * 0.5));
 
     //Draw background.
     final bgRect =

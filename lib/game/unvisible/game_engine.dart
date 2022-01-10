@@ -57,7 +57,7 @@ class GameEngine {
     myCharacter = MyCharacter();
   }
 
-  List update(
+  bool update(
     double t,
     double x_hand,
     double y_hand,
@@ -120,20 +120,20 @@ class GameEngine {
     if (is_char_died) {
       if (AppParams.isTutorial) {
         if (AppParams.totalScore > 10000) {
-          return [true, 0];
+          return true;
         } else {
           myCharacter.y_speed = AppParams.gameSize[1] * 0.2;
           tutorialPage.moving_hand_timer = 2;
           //Tutorial ekranında ölme gerçekleşmeyecek.
           //TODO: bu ölme işlemini burayı düzenleyerek bir kurala/skora/süreye bağla.
 
-          return [false, AppParams.totalScore];
+          return false;
         }
       } else {
-        return [true, AppParams.totalScore];
+        return true;
       }
     } else {
-      return [false, AppParams.totalScore];
+      return false;
     }
   }
 

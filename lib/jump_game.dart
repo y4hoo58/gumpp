@@ -90,11 +90,17 @@ class JumpGame extends FlameGame with TapDetector {
       initialWait = initialWait - t;
       return AppParams.gameState;
     } else {
-      gameEngine.update(
+      bool isCharDied = gameEngine.update(
         t,
         handDetection.x_hand,
         handDetection.y_hand,
       );
+
+      if (isCharDied) {
+        return 1;
+      } else {
+        return AppParams.gameState;
+      }
     }
   }
 
