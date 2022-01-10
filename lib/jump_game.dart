@@ -6,23 +6,18 @@ import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 
 import 'package:is_first_run/is_first_run.dart';
-import 'package:tflite_flutter/tflite_flutter.dart';
 
+import 'package:gumpp/app_params.dart';
 import 'package:gumpp/helpers/shared_preferences_helper.dart';
 import 'package:gumpp/game/unvisible/game_engine.dart';
 import 'package:gumpp/helpers/hand_detection/hand_detection.dart';
-import 'package:gumpp/tutorial_page.dart';
-
-import 'package:gumpp/app_params.dart';
 
 class JumpGame extends FlameGame with TapDetector {
   GameEngine gameEngine;
   HandDetection handDetection;
-  TutorialPage tutorialPage;
-
-  double initialWait = 2;
 
   int bestScore = 0;
+  double initialWait = 2;
 
   Function onLose = () {};
 
@@ -33,18 +28,15 @@ class JumpGame extends FlameGame with TapDetector {
   void initGame() async {
     await checkIfTutorial();
 
-    gameEngine = GameEngine(tutorialPage);
+    gameEngine = GameEngine();
 
     handDetection = HandDetection();
-    handDetection.startLoop();
+    handDetection.initialization();
   }
 
+  //TODO: main'e taşınacak.
   void checkIfTutorial() async {
     AppParams.isTutorial ??= await IsFirstRun.isFirstRun();
-
-    if (AppParams.isTutorial) {
-      tutorialPage = TutorialPage();
-    }
   }
 
   @override
@@ -83,6 +75,10 @@ class JumpGame extends FlameGame with TapDetector {
       );
 
       if (isCharDied) {
+        //Eğer karakter öldüyse yeni best score'u kaydet.
+        if (AppParams.totalScore > AppParams.bestScore) {
+          setBestScore(AppParams.bestScore);
+        }
         return 1;
       } else {
         return AppParams.gameState;
@@ -90,13 +86,14 @@ class JumpGame extends FlameGame with TapDetector {
     }
   }
 
+  //TODO: Çalıştırılacak.
   void setBestScore(int best_score) async {
     SharedPreferencesHelper.setBestScore(best_score);
   }
 
   void resetGame() {
     handDetection.startLoop();
-    //gameEngine.resetGameParams();
+    gameEngine = GameEngine();
     initialWait = 1;
   }
 
@@ -120,9 +117,6 @@ class JumpGame extends FlameGame with TapDetector {
   void render(Canvas canvas) {
     if (gameEngine != null) {
       gameEngine.render(canvas);
-    }
-    if (AppParams.isTutorial == true) {
-      tutorialPage.render_tutorial_page(canvas);
     }
   }
 

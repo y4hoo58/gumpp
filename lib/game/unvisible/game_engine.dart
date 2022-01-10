@@ -4,18 +4,21 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+import 'package:gumpp/app_params.dart';
+import 'package:gumpp/tutorial_page.dart';
+
 import 'package:gumpp/components/character.dart';
 import 'package:gumpp/components/sticks/sticks.dart';
+
 import 'package:gumpp/game/unvisible/game_design.dart';
 import 'package:gumpp/game/unvisible/physics_engine.dart';
+
+import 'package:gumpp/game/visible/game_render.dart';
 
 import 'package:gumpp/components/sticks/normal_sticks.dart';
 import 'package:gumpp/components/sticks/bonus_sticks.dart';
 import 'package:gumpp/components/sticks/inverse_sticks.dart';
 import 'package:gumpp/components/sticks/boosted_sticks.dart';
-import 'package:gumpp/tutorial_page.dart';
-import 'package:gumpp/game/visible/game_render.dart';
-import 'package:gumpp/app_params.dart';
 
 class GameEngine {
   PhysicsEngine physicsEngine = PhysicsEngine();
@@ -28,15 +31,19 @@ class GameEngine {
 
   double y_hand, prediction_box_area;
 
-  GameEngine(this.tutorialPage) {
+  GameEngine() {
     init_game_engine();
   }
 
-  //GameEngine başlatma işlemlerini gerçekleştir.
-  //Önce stickleri başlat, daha sonra karakteri başlat.
   void init_game_engine() {
+    if (AppParams.isTutorial) {
+      tutorialPage = TutorialPage();
+    }
+
     create_initial_sticks();
-    create_character();
+
+    myCharacter = MyCharacter();
+
     gameRender.setParameters(
       all_sticks,
       myCharacter,
@@ -44,17 +51,10 @@ class GameEngine {
     );
   }
 
-  //Başlangıç olarak 8 adet Normal Stick yerleştir ekrana.
-  //TODO: Bu rakam değiştirilecek.
   void create_initial_sticks() {
     for (var i = 20; i > 0; i = i - 1) {
       all_sticks.add(NormalStick(i * AppParams.gameSize[1] / 25, 0));
     }
-  }
-
-  //Karakteri başlatma işlemini gerçekleştir.
-  void create_character() {
-    myCharacter = MyCharacter();
   }
 
   bool update(
@@ -117,6 +117,8 @@ class GameEngine {
       y_hand,
     );
 
+    updateScore();
+
     if (is_char_died) {
       if (AppParams.isTutorial) {
         if (AppParams.totalScore > 10000) {
@@ -124,9 +126,6 @@ class GameEngine {
         } else {
           myCharacter.y_speed = AppParams.gameSize[1] * 0.2;
           tutorialPage.moving_hand_timer = 2;
-          //Tutorial ekranında ölme gerçekleşmeyecek.
-          //TODO: bu ölme işlemini burayı düzenleyerek bir kurala/skora/süreye bağla.
-
           return false;
         }
       } else {
@@ -170,8 +169,6 @@ class GameEngine {
     }
   }
 
-  //Sticklerin konumunu günceller.
-  //Eğer stick öldüyse listeden çıkarır.
   void update_sticks(double t) {
     int i = 0;
 
@@ -186,9 +183,7 @@ class GameEngine {
     }
   }
 
-  void change_game_mode(
-    String stick_type,
-  ) {
+  void change_game_mode(String stick_type) {
     if (stick_type == "bonus") {
       randomizeSticks();
       if (AppParams.currentGameMode == -1) {
@@ -243,14 +238,21 @@ class GameEngine {
     }
   }
 
-  // void updateScore() {
-  //   if (myCharacter.abs_char_offset != null) {
-  //     gameDesign.total_points =
-  //         gameDesign.total_points + myCharacter.abs_char_offset.toInt();
-  //   }
-  // }
+  void updateScore() {
+    int _score;
+    if (myCharacter.abs_char_offset == null) {
+      _score = 0;
+    } else {
+      _score = myCharacter.abs_char_offset.toInt();
+    }
+    AppParams.totalScore =
+        AppParams.totalScore + myCharacter.abs_char_offset.toInt();
+  }
 
   void render(Canvas canvas) {
     gameRender.render(canvas);
+    if (AppParams.isTutorial) {
+      tutorialPage.render_tutorial_page(canvas);
+    }
   }
 }

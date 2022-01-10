@@ -42,23 +42,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Interpreter _interpreter;
   //Loads the tflite model.
 
-  Future<InitializationStatus> _initGoogleMobileAds() {
-    // TODO: Initialize Google Mobile Ads SDK
-    return MobileAds.instance.initialize();
-  }
-
   @override
   void initState() {
     init();
-    load_bestScore();
-    _initGoogleMobileAds();
     load_model();
+    _initGoogleMobileAds();
+    load_bestScore();
     super.initState();
   }
 
-  @override
-  void dispose() {
-    super.dispose();
+  void init() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    await Flame.device.fullScreen();
+    await Flame.device.setPortraitUpOnly();
   }
 
   void load_model() async {
@@ -71,24 +67,29 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     AppParams.interpreterAddress = _interpreter.address;
   }
 
-  void init() async {
-    WidgetsFlutterBinding.ensureInitialized();
-    await Flame.device.fullScreen();
-    await Flame.device.setPortraitUpOnly();
+  Future<InitializationStatus> _initGoogleMobileAds() {
+    // TODO: Initialize Google Mobile Ads SDK
+    return MobileAds.instance.initialize();
   }
 
-  //TODO
   void load_bestScore() async {
     bestScore = await SharedPreferencesHelper.getBestScore();
+
     //Eğer daha önceden bestscore kaydedilmediyse null döndürüyor.
     if (bestScore == null) {
       bestScore = 0;
       set_bestScore(bestScore);
     }
+    AppParams.bestScore = bestScore;
   }
 
   void set_bestScore(int best_score) async {
     SharedPreferencesHelper.setBestScore(best_score);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override

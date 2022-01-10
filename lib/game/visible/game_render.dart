@@ -12,23 +12,10 @@ class GameRender {
 
   double y_hand;
   double prediction_box_area;
-  double total_points = 0;
 
   int bestScore = AppParams.bestScore;
 
-  //TODO: Her seferinde tekrar tekrar screensize geçmek yerine
-  //tek seferde yap
-  GameRender() {
-    load_bestScore();
-  }
-
-  void load_bestScore() async {
-    bestScore = await SharedPreferencesHelper.getBestScore();
-    //Eğer daha önceden bestscore kaydedilmediyse null döndürüyor.
-    if (bestScore == null) {
-      bestScore = 0;
-    }
-  }
+  GameRender() {}
 
   void setParameters(
     List all_sticks,
@@ -148,7 +135,7 @@ class GameRender {
         fontWeight: FontWeight.w900);
 
     final textSpan = TextSpan(
-      text: total_points.round().toString(),
+      text: AppParams.totalScore.round().toString(),
       style: textStyle,
     );
     final textPainter = TextPainter(
