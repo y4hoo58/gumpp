@@ -17,10 +17,12 @@ import 'package:gumpp/app_params.dart';
 
 class JumpGame extends FlameGame with TapDetector {
   GameEngine gameEngine;
-
   HandDetection handDetection;
-
   TutorialPage tutorialPage;
+
+  double initialWait = 2;
+
+  int bestScore = 0;
 
   Function onLose = () {};
 
@@ -28,37 +30,21 @@ class JumpGame extends FlameGame with TapDetector {
     initGame();
   }
 
-  double initialWait = 2;
-
-  int bestScore = 0;
-
-  int renderScore;
-
-  Interpreter interpreter;
-
   void initGame() async {
     await checkIfTutorial();
 
     gameEngine = GameEngine(tutorialPage);
 
     handDetection = HandDetection();
+    handDetection.startLoop();
   }
 
   void checkIfTutorial() async {
-    if (AppParams.isTutorial == null) {
-      AppParams.isTutorial = await IsFirstRun.isFirstRun();
-    }
+    AppParams.isTutorial ??= await IsFirstRun.isFirstRun();
 
     if (AppParams.isTutorial) {
       tutorialPage = TutorialPage();
     }
-  }
-
-  void resetGame() {
-    handDetection.startLoop();
-    //gameEngine.resetGameParams();
-
-    initialWait = 1;
   }
 
   @override
@@ -106,6 +92,12 @@ class JumpGame extends FlameGame with TapDetector {
 
   void setBestScore(int best_score) async {
     SharedPreferencesHelper.setBestScore(best_score);
+  }
+
+  void resetGame() {
+    handDetection.startLoop();
+    //gameEngine.resetGameParams();
+    initialWait = 1;
   }
 
   void finishGame() async {
