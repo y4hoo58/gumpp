@@ -22,15 +22,21 @@ class AppParams {
   //-2  : Retry atıldı
   //-1  : Bekleme ekranında bekliyor
   // 0  : Oyun devam ediyor
-  // 1  : Player 1 kazandı
-  // 2  : Player 2 kazandı
-  // 3  : Kamera bekleniyor
-
+  // 1  : Player Öldü
+  // 2  : Kamera bekleniyor
   static int gameState;
+
+  //-1 : Reverse
+  // 0 : No mode
+  static int currentGameMode;
 
   static bool isPlayer1Selected;
 
   static const int maxPoints = 5;
 
   static int bestScore;
+
+  static int totalScore = 0;
+
+  static bool isTutorial;
 }

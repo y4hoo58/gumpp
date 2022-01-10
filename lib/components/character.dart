@@ -44,16 +44,16 @@ class MyCharacter {
     ///TODO: game_mode_factor kontrol edilecek.
   }
 
-  void update(double t, double x_hand, String game_mode) {
+  void update(double t, double x_hand) {
     //TODO : Burayı yeniden kontrol et.
     // Eğer x_hand nullsa, karakter aynı yerinde kalsın herhangi bir yöne hareket etmesin.
     // Daha sonraki evrelerde bu kısım bir miktar geliştirilebilir ve bir prediction ile
     // başka bir değer atanabilir.
 
     if (x_hand != null) {
-      update_center_x(x_hand, game_mode);
+      update_center_x(x_hand);
     } else {
-      update_center_x(center_x, game_mode);
+      update_center_x(center_x);
     }
 
     //Update center y
@@ -65,14 +65,14 @@ class MyCharacter {
     is_char_died();
   }
 
-  void update_center_x(double x_hand, String game_mode) {
+  void update_center_x(double x_hand) {
     //Old center x. Used for colliding detection.
     old_center_x = center_x;
 
     //Current location as float.
     double x_float = center_x / AppParams.gameSize[0];
 
-    if (game_mode == "inverse_mode") {
+    if (AppParams.currentGameMode == -1) {
       x_hand = (1 - x_hand).abs();
     }
     double dist = (x_float - x_hand).abs();

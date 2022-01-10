@@ -25,14 +25,10 @@ class JumpGame extends FlameGame with TapDetector {
   Function onLose = () {};
 
   JumpGame() {
-    init_game();
+    initGame();
   }
 
-  String condition = "full initialization";
-  String orientation;
-
-  bool is_tutorial;
-  double initial_wait = 2;
+  double initialWait = 2;
 
   int bestScore = 0;
 
@@ -44,21 +40,16 @@ class JumpGame extends FlameGame with TapDetector {
     await checkIfTutorial();
 
     gameEngine = GameEngine(tutorialPage);
-    gameEngine.is_tutorial = is_tutorial;
 
     handDetection = HandDetection();
-
-    initial_wait = 2;
   }
 
   void checkIfTutorial() async {
-    if (is_tutorial == null) {
-      is_tutorial = await IsFirstRun.isFirstRun();
-    } else if (is_tutorial == true) {
-      is_tutorial = false;
+    if (AppParams.isTutorial == null) {
+      AppParams.isTutorial = await IsFirstRun.isFirstRun();
     }
 
-    if (is_tutorial == true) {
+    if (AppParams.isTutorial) {
       tutorialPage = TutorialPage();
     }
   }
@@ -67,75 +58,51 @@ class JumpGame extends FlameGame with TapDetector {
     handDetection.startLoop();
     //gameEngine.resetGameParams();
 
-    initial_wait = 1;
-  }
-
-  @override
-  bool onTapUp(TapUpInfo tapUp) {
-    if (condition == "initialized") {
-      condition = "playing";
-    } else if (condition == "game finished") {
-      //TODO: buradaki aralığı tam retry text boyutlarına göre ayarla
-      double tap_y = tapUpDetails.globalPosition.dy;
-      if (tap_y > AppParams.gameSize[1] * 0.69 &&
-          tap_y < AppParams.gameSize[1] * 0.79) {
-        //Retry atılacağı için durumu restart game olarak değiştir.
-        condition = "lite initialization";
-
-        //Başlatma işlemini tekrardan yap.
-        init_game();
-      } else if (tap_y > AppParams.gameSize[1] * 0.84 &&
-          tap_y < AppParams.gameSize[1] * 0.95) {
-        delete_game();
-      }
-    }
-    return true;
+    initialWait = 1;
   }
 
   @override
   void update(double t) {
-    if (condition == "playing" &&
-        interpreter != null &&
-        handDetection.is_camera_working == true) {
-      if (initial_wait <= 0) {
-        if (is_tutorial == true) {
-          tutorialPage.t = t;
-        }
-
-        if (renderScore == null) {
-          renderScore = bestScore;
-        }
-        final gameList = gameEngine.update(
-            t,
-            handDetection.x_hand,
-            handDetection.y_hand,
-            //TODO: prediction_box_area yeniden eklenecek
-            //handDetection.prediction_box_area,
-            renderScore);
-
-        if (gameList[1].round() > renderScore) {
-          renderScore = gameList[1].round();
-        }
-        if (gameList[0] == true) {
-          condition = "game finished";
-          handDetection.stop_stream();
-
-          if (bestScore < renderScore) {
-            bestScore = renderScore;
-            set_bestScore(bestScore);
-          }
-        }
-      } else {
-        initial_wait = initial_wait - t;
-      }
+    switch (AppParams.gameState) {
+      case -3:
+        finishGame();
+        break;
+      case -2:
+        handDetection.startLoop();
+        resetGame();
+        AppParams.gameState = 0;
+        break;
+      case -1:
+        break;
+      case 0:
+        AppParams.gameState = playGame(t);
+        break;
+      case 1:
+        handDetection.stopLoop();
+        break;
+      case 2:
+        break;
     }
   }
 
-  void set_bestScore(int best_score) async {
+  int playGame(double t) {
+    if (initialWait > 0) {
+      initialWait = initialWait - t;
+      return AppParams.gameState;
+    } else {
+      gameEngine.update(
+        t,
+        handDetection.x_hand,
+        handDetection.y_hand,
+      );
+    }
+  }
+
+  void setBestScore(int best_score) async {
     SharedPreferencesHelper.setBestScore(best_score);
   }
 
-  void delete_game() async {
+  void finishGame() async {
     await Future.delayed(
       const Duration(milliseconds: 25),
     );
@@ -154,10 +121,43 @@ class JumpGame extends FlameGame with TapDetector {
   @override
   void render(Canvas canvas) {
     if (gameEngine != null) {
-      gameEngine.render(canvas, condition);
+      gameEngine.render(canvas);
     }
-    if (is_tutorial == true) {
+    if (AppParams.isTutorial == true) {
       tutorialPage.render_tutorial_page(canvas);
     }
+  }
+
+  @override
+  bool onTapUp(TapUpInfo tapUp) {
+    switch (AppParams.gameState) {
+      case -1:
+        AppParams.gameState = 0;
+        break;
+      case 1:
+        AppParams.gameState = compButtons(tapUp);
+        break;
+    }
+    return true;
+  }
+
+  int compButtons(TapUpInfo tapUp) {
+    final double xTap = tapUp.eventPosition.global.x;
+    final double yTap = tapUp.eventPosition.global.y;
+
+    //Eğer "retry" butonuna basılırsa gamestate'i oyuna retry atılacak şekilde güncelle.
+    //TODO : x sınır koşullarını da ekle
+    if (yTap > AppParams.gameSize[1] * 0.69 &&
+        yTap < AppParams.gameSize[1] * 0.79) {
+      return -2;
+    }
+    //Eğer "menu" butonuna basılırsa gamestate'i oyunu sıfırlayacak şekilde güncelle.
+    //TODO : x sınır koşullarını da ekle
+    if (yTap > AppParams.gameSize[1] * 0.84 &&
+        yTap < AppParams.gameSize[1] * 0.95) {
+      return -3;
+    }
+
+    return AppParams.gameState;
   }
 }

@@ -7,8 +7,6 @@ import 'package:gumpp/helpers/shared_preferences_helper.dart';
 import 'package:gumpp/app_params.dart';
 
 class GameRender {
-  String current_game_mode;
-
   List<Stick> all_sticks;
   MyCharacter myCharacter;
 
@@ -33,21 +31,16 @@ class GameRender {
   }
 
   void setParameters(
-      List all_sticks,
-      String current_game_mode,
-      double total_points,
-      MyCharacter myCharacter,
-      double y_hand,
-      double prediction_box_area) {
+    List all_sticks,
+    MyCharacter myCharacter,
+    double y_hand,
+  ) {
     this.all_sticks = all_sticks;
-    this.current_game_mode = current_game_mode;
-    this.total_points = total_points;
     this.myCharacter = myCharacter;
     this.y_hand = y_hand;
-    this.prediction_box_area = prediction_box_area;
   }
 
-  void render(Canvas canvas, String condition) {
+  void render(Canvas canvas) {
     //Oyun arka planını renderlar.
     drawBackground(canvas);
 
@@ -69,9 +62,9 @@ class GameRender {
     //renderlar. Eğer oyun bittiyse aynı şeyi finish screen için gerçekleştirir.
     //Bu ekranların normal halinde arkada oyun tasarımı olduğu gibi kaldığı için
     //bu ikisini ayrı birer ekranmış gibi düşünme.
-    if (condition == "initialized") {
+    if (AppParams.gameState == -1) {
       render_tap_screen(canvas);
-    } else if (condition == "game finished") {
+    } else if (AppParams.gameState == 1) {
       render_finish_screen(canvas);
     }
   }
@@ -86,7 +79,7 @@ class GameRender {
     );
     final bgPaint = Paint();
 
-    if (current_game_mode == "inverse_mode") {
+    if (AppParams.currentGameMode == -1) {
       bgPaint.color = Colors.redAccent.shade100;
     } else {
       bgPaint.color = Colors.black;

@@ -1,18 +1,16 @@
+import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:gumpp/jump_game.dart';
 
-class GameWidget extends StatelessWidget {
-  final String camm;
-  final JumpGame jumpGame;
+class MyGameWidget extends StatelessWidget {
+  final JumpGame jumpGame = JumpGame();
   int bestScore;
-  GameWidget(this.camm, this.jumpGame) {
+
+  MyGameWidget() {
     initStateless();
   }
 
   void initStateless() {
-    jumpGame.condition = "full initialization";
-    jumpGame.orientation = camm;
-
     jumpGame.bestScore = bestScore;
   }
 
@@ -23,6 +21,8 @@ class GameWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     jumpGame.onLose = () => onLose(context);
-    return jumpGame.widget;
+    return GameWidget(
+      game: jumpGame,
+    );
   }
 }

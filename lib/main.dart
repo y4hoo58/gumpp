@@ -112,12 +112,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   minHeight: MediaQuery.of(context).size.height * 0.175),
             ),
             Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-              PlayButton("front_cam"),
+              PlayButton(true),
               ConstrainedBox(
                 constraints: BoxConstraints(
                     minWidth: MediaQuery.of(context).size.width * 0.05),
               ),
-              PlayButton("rear_cam"),
+              PlayButton(false),
             ]),
           ],
         ),

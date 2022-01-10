@@ -5,15 +5,16 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 import 'package:flame/sprite.dart';
+//import 'package:flame/images.dart';
 
 import 'package:gumpp/app_params.dart';
 
 class TutorialPage {
-  Sprite too_close = Sprite("too_close.png");
-  Sprite too_up = Sprite("too_up.png");
-  Sprite too_down = Sprite("too_down.png");
-  Sprite correct_sprite = Sprite("correct.png");
-  Sprite hand_palm_sprite = Sprite("hand_palm.png");
+  // Sprite too_close = Sprite("too_close.png");
+  // Sprite too_up = Sprite("too_up.png");
+  // Sprite too_down = Sprite("too_down.png");
+  // Sprite correct_sprite = Sprite("correct.png");
+  // Sprite hand_palm_sprite = Sprite("hand_palm.png");
 
   double moving_hand_center_x, moving_hand_direction;
 
@@ -46,10 +47,10 @@ class TutorialPage {
   }
 
   void render_info_panel(Canvas canvas) {
-    render_phone_image_one(canvas);
-    render_phone_image_two(canvas);
-    render_phone_image_three(canvas);
-    render_phone_image_four(canvas);
+    // render_phone_image_one(canvas);
+    // render_phone_image_two(canvas);
+    // render_phone_image_three(canvas);
+    // render_phone_image_four(canvas);
 
     render_ayrim_line(canvas);
 
@@ -70,42 +71,42 @@ class TutorialPage {
   ///Render phone images
   /////////////////////////////////
   //TODO: Ekran oranına göre boyutları öyle bir ayarla ki resim kareye çok yakın olsun..
-  void render_phone_image_one(Canvas canvas) {
-    Rect phone_rect;
-    double render_x = AppParams.gameSize[0] * 0.05;
-    double render_y = AppParams.gameSize[1] * 0.15;
+  // void render_phone_image_one(Canvas canvas) {
+  //   Rect phone_rect;
+  //   double render_x = AppParams.gameSize[0] * 0.05;
+  //   double render_y = AppParams.gameSize[1] * 0.15;
 
-    phone_rect = Rect.fromLTWH(render_x, render_y, AppParams.gameSize[0] * 0.2,
-        AppParams.gameSize[1] * 0.09);
-    too_down.renderRect(canvas, phone_rect);
-  }
+  //   phone_rect = Rect.fromLTWH(render_x, render_y, AppParams.gameSize[0] * 0.2,
+  //       AppParams.gameSize[1] * 0.09);
+  //   too_down.renderRect(canvas, phone_rect);
+  // }
 
-  void render_phone_image_two(Canvas canvas) {
-    Rect phone_rect;
-    double render_x = AppParams.gameSize[0] * 0.275;
-    double render_y = AppParams.gameSize[1] * 0.15;
-    phone_rect = Rect.fromLTWH(render_x, render_y, AppParams.gameSize[0] * 0.2,
-        AppParams.gameSize[1] * 0.09);
-    too_up.renderRect(canvas, phone_rect);
-  }
+  // void render_phone_image_two(Canvas canvas) {
+  //   Rect phone_rect;
+  //   double render_x = AppParams.gameSize[0] * 0.275;
+  //   double render_y = AppParams.gameSize[1] * 0.15;
+  //   phone_rect = Rect.fromLTWH(render_x, render_y, AppParams.gameSize[0] * 0.2,
+  //       AppParams.gameSize[1] * 0.09);
+  //   too_up.renderRect(canvas, phone_rect);
+  // }
 
-  void render_phone_image_three(Canvas canvas) {
-    Rect phone_rect;
-    double render_x = AppParams.gameSize[0] * 0.5;
-    double render_y = AppParams.gameSize[1] * 0.15;
-    phone_rect = Rect.fromLTWH(render_x, render_y, AppParams.gameSize[0] * 0.2,
-        AppParams.gameSize[1] * 0.09);
-    too_close.renderRect(canvas, phone_rect);
-  }
+  // void render_phone_image_three(Canvas canvas) {
+  //   Rect phone_rect;
+  //   double render_x = AppParams.gameSize[0] * 0.5;
+  //   double render_y = AppParams.gameSize[1] * 0.15;
+  //   phone_rect = Rect.fromLTWH(render_x, render_y, AppParams.gameSize[0] * 0.2,
+  //       AppParams.gameSize[1] * 0.09);
+  //   too_close.renderRect(canvas, phone_rect);
+  // }
 
-  void render_phone_image_four(canvas) {
-    Rect correct_rect;
-    double render_x = AppParams.gameSize[0] * 0.75;
-    double render_y = AppParams.gameSize[1] * 0.15;
-    correct_rect = Rect.fromLTWH(render_x, render_y,
-        AppParams.gameSize[0] * 0.2, AppParams.gameSize[1] * 0.09);
-    correct_sprite.renderRect(canvas, correct_rect);
-  }
+  // void render_phone_image_four(canvas) {
+  //   Rect correct_rect;
+  //   double render_x = AppParams.gameSize[0] * 0.75;
+  //   double render_y = AppParams.gameSize[1] * 0.15;
+  //   correct_rect = Rect.fromLTWH(render_x, render_y,
+  //       AppParams.gameSize[0] * 0.2, AppParams.gameSize[1] * 0.09);
+  //   correct_sprite.renderRect(canvas, correct_rect);
+  // }
 
   ///////////////////////////////////
 
@@ -131,7 +132,8 @@ class TutorialPage {
     Rect hand_palm_rect;
     hand_palm_rect = Rect.fromLTWH(moving_hand_center_x, render_y,
         AppParams.gameSize[0] * 0.11, AppParams.gameSize[1] * 0.075);
-    hand_palm_sprite.renderRect(canvas, hand_palm_rect);
+    //TODO: YOrum kaldır.
+    //hand_palm_sprite.renderRect(canvas, hand_palm_rect);
   }
 
   //////////////////////////////////

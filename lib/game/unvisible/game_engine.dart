@@ -26,11 +26,7 @@ class GameEngine {
 
   List<Stick> all_sticks = [];
 
-  String current_game_mode = "";
-
   double y_hand, prediction_box_area;
-
-  bool is_tutorial;
 
   GameEngine(this.tutorialPage) {
     init_game_engine();
@@ -41,8 +37,11 @@ class GameEngine {
   void init_game_engine() {
     create_initial_sticks();
     create_character();
-    gameRender.setParameters(all_sticks, current_game_mode, 0, myCharacter,
-        y_hand, prediction_box_area);
+    gameRender.setParameters(
+      all_sticks,
+      myCharacter,
+      y_hand,
+    );
   }
 
   //Başlangıç olarak 8 adet Normal Stick yerleştir ekrana.
@@ -73,7 +72,7 @@ class GameEngine {
     myCharacter.abs_char_offset = 0;
 
     //Karakteri güncelle.
-    myCharacter.update(t, x_hand, current_game_mode);
+    myCharacter.update(t, x_hand);
 
     //Stickleri güncelle
     update_sticks(t);
@@ -89,7 +88,7 @@ class GameEngine {
       myCharacter.center_x,
       myCharacter.center_y,
       myCharacter.radius,
-      myCharacter.y_speed
+      myCharacter.y_speed,
     ], all_sticks);
 
     //Eğer temas varsa (y_correction) değeri kadar karakter zıplatılacak.
@@ -112,12 +111,15 @@ class GameEngine {
     //edildikten sonra gerçekleştiriliyor.
     bool is_char_died = myCharacter.is_char_died();
 
-    gameRender.setParameters(all_sticks, current_game_mode,
-        gameDesign.total_points, myCharacter, y_hand, prediction_box_area);
+    gameRender.setParameters(
+      all_sticks,
+      myCharacter,
+      y_hand,
+    );
 
     if (is_char_died) {
-      if (is_tutorial) {
-        if (gameDesign.total_points > 10000) {
+      if (AppParams.isTutorial) {
+        if (AppParams.totalScore > 10000) {
           return [true, 0];
         } else {
           myCharacter.y_speed = AppParams.gameSize[1] * 0.2;
@@ -125,13 +127,13 @@ class GameEngine {
           //Tutorial ekranında ölme gerçekleşmeyecek.
           //TODO: bu ölme işlemini burayı düzenleyerek bir kurala/skora/süreye bağla.
 
-          return [false, gameDesign.total_points];
+          return [false, AppParams.totalScore];
         }
       } else {
-        return [true, gameDesign.total_points];
+        return [true, AppParams.totalScore];
       }
     } else {
-      return [false, gameDesign.total_points];
+      return [false, AppParams.totalScore];
     }
   }
 
@@ -184,22 +186,24 @@ class GameEngine {
     }
   }
 
-  void change_game_mode(String stick_type) {
+  void change_game_mode(
+    String stick_type,
+  ) {
     if (stick_type == "bonus") {
       randomizeSticks();
-      if (current_game_mode == "inverse_mode") {
+      if (AppParams.currentGameMode == -1) {
         change_stick_reversity();
       }
-    } else if (current_game_mode == "" && stick_type == "inverse") {
+    } else if (AppParams.currentGameMode == 0 && stick_type == "inverse") {
       change_stick_reversity();
-    } else if (current_game_mode == "inverse_mode" && stick_type != "inverse") {
+    } else if (AppParams.currentGameMode == -1 && stick_type != "inverse") {
       change_stick_reversity();
     }
   }
 
   //TODO : DÜZELTİLECEK
   void change_stick_reversity() {
-    if (current_game_mode == "") {
+    if (AppParams.currentGameMode == 0) {
       for (var i = 0; i < all_sticks.length; i++) {
         all_sticks[i].center_x =
             (AppParams.gameSize[0] - all_sticks[i].center_x).abs();
@@ -209,8 +213,8 @@ class GameEngine {
           all_sticks[i].direction = 1;
         }
       }
-      current_game_mode = "inverse_mode";
-    } else if (current_game_mode == "inverse_mode") {
+      AppParams.currentGameMode = -1;
+    } else if (AppParams.currentGameMode == -1) {
       for (var i = 0; i < all_sticks.length; i++) {
         all_sticks[i].center_x =
             (AppParams.gameSize[0] - all_sticks[i].center_x).abs();
@@ -220,7 +224,7 @@ class GameEngine {
           all_sticks[i].direction = 1;
         }
       }
-      current_game_mode = "";
+      AppParams.currentGameMode = 0;
     }
   }
 
@@ -246,7 +250,7 @@ class GameEngine {
   //   }
   // }
 
-  void render(Canvas canvas, String condition) {
-    gameRender.render(canvas, condition);
+  void render(Canvas canvas) {
+    gameRender.render(canvas);
   }
 }

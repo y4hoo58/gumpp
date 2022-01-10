@@ -1,29 +1,31 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:gumpp/main.dart';
+
 import 'package:gumpp/widgets/game_widget.dart';
 import 'package:gumpp/widgets/ad_widget.dart';
+import 'package:gumpp/app_params.dart';
 
 class PlayButton extends StatefulWidget {
-  final String buttonName;
-  PlayButton(this.buttonName);
+  final bool isFrontCam;
+  PlayButton(this.isFrontCam);
   @override
-  PlayButtonState createState() => PlayButtonState(this.buttonName);
+  PlayButtonState createState() => PlayButtonState(this.isFrontCam);
 }
 
 class PlayButtonState extends State<PlayButton> {
-  final String buttonName;
+  final bool isFrontCam;
+
   Color buttonColor = Colors.transparent;
   String assetName;
-  PlayButtonState(this.buttonName);
+  PlayButtonState(this.isFrontCam);
 
   @override
   void initState() {
     super.initState();
-    if (buttonName == "front_cam") {
+    if (isFrontCam) {
       assetName = "assets/images/front_cam_img.png";
-    } else if (buttonName == "rear_cam") {
+    } else {
       assetName = "assets/images/back_cam_img.png";
     }
 
@@ -59,10 +61,12 @@ class PlayButtonState extends State<PlayButton> {
     return RawMaterialButton(
       fillColor: buttonColor,
       onPressed: () {
+        AppParams.isFrontCam = isFrontCam;
+
         Navigator.of(context).push(MaterialPageRoute(builder: (context) {
           return Stack(
             children: <Widget>[
-              GameWidget(buttonName, jumpGame),
+              MyGameWidget(),
               AddWidg(),
             ],
           );
