@@ -3,7 +3,6 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:gumpp/components/character.dart';
 import 'package:gumpp/components/sticks/sticks.dart';
@@ -109,9 +108,6 @@ class GameEngine {
       myCharacter.bounce_the_ball(y_correction, stick_type);
     }
 
-    //Puanı güncelle.
-    update_score();
-
     //Karakterin ölüp ölmediği temas gerçekleşip gerçekleşmediği kontrol
     //edildikten sonra gerçekleştiriliyor.
     bool is_char_died = myCharacter.is_char_died();
@@ -190,7 +186,7 @@ class GameEngine {
 
   void change_game_mode(String stick_type) {
     if (stick_type == "bonus") {
-      randomize_sticks();
+      randomizeSticks();
       if (current_game_mode == "inverse_mode") {
         change_stick_reversity();
       }
@@ -231,8 +227,9 @@ class GameEngine {
   //Random stick'e temas sağlandığında stick x konumlarının
   //rastgele olarak değişmesini sağlar.
   //TODO: Randomization işlemini kontrol et.
-  void randomize_sticks() {
+  void randomizeSticks() {
     var rng = Random();
+
     for (var i = 0; i < all_sticks.length; i++) {
       all_sticks[i].center_x = rng
               .nextInt(
@@ -242,23 +239,12 @@ class GameEngine {
     }
   }
 
-  //Devamlı olarak skoru günceller.
-  String update_score() {
-    if (myCharacter.abs_char_offset != null) {
-      gameDesign.total_points =
-          gameDesign.total_points + myCharacter.abs_char_offset.toInt();
-      return gameDesign.total_points.round().toString();
-    } else {
-      return "-";
-    }
-  }
-  ////////////////////////////////////////////////////////////////
-  ///Character...
-  ////////////////////////////////////////////////////////////////
-
-  ////////////////////////////////////////////////////////////////
-  /// Rendering processess...
-  ////////////////////////////////////////////////////////////////
+  // void updateScore() {
+  //   if (myCharacter.abs_char_offset != null) {
+  //     gameDesign.total_points =
+  //         gameDesign.total_points + myCharacter.abs_char_offset.toInt();
+  //   }
+  // }
 
   void render(Canvas canvas, String condition) {
     gameRender.render(canvas, condition);

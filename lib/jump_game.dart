@@ -40,11 +40,18 @@ class JumpGame extends FlameGame with TapDetector {
 
   Interpreter interpreter;
 
-  void init_game() async {
-    //Eğer is_tutorial "null" ise uygulamanın ilk kez kullanılıp kullanılmadığına bakıyor.
-    //Ancak eğer is_tutorial "true" ise, zaten bir el oyun oynanmış demektir bu yüzden
-    //is_tutorial "true"'dur. Bu yüzden retry tuşuna basıldığı zaman tutorial ekranının
-    //kaldırılması gerekir.
+  void initGame() async {
+    await checkIfTutorial();
+
+    gameEngine = GameEngine(tutorialPage);
+    gameEngine.is_tutorial = is_tutorial;
+
+    handDetection = HandDetection();
+
+    initial_wait = 2;
+  }
+
+  void checkIfTutorial() async {
     if (is_tutorial == null) {
       is_tutorial = await IsFirstRun.isFirstRun();
     } else if (is_tutorial == true) {
@@ -54,40 +61,17 @@ class JumpGame extends FlameGame with TapDetector {
     if (is_tutorial == true) {
       tutorialPage = TutorialPage();
     }
+  }
 
-    if (condition == "full initialization") {
-      gameEngine = GameEngine(tutorialPage);
-      gameEngine.is_tutorial = is_tutorial;
+  void resetGame() {
+    handDetection.startLoop();
+    //gameEngine.resetGameParams();
 
-      handDetection = HandDetection();
-
-      //Tap screen'den sonra her şeyin iyice başladığından emin olmak için
-      //2 saniye gibi bir süre beklenmesi gerekiyor.
-      initial_wait = 2;
-
-      //Not: Burada condition'ı "playing" olarak değiştirmiyoruz çünkü
-      //bu ekranda kullanıcıdan tap yapması bekleniyor.
-      condition = "initialized";
-    } else if (condition == "lite initialization") {
-      //GameEngine'i başlat ve tutorial ekranı olup olmadığına dair bilgilendir.
-      gameEngine = GameEngine(tutorialPage);
-      gameEngine.is_tutorial = is_tutorial;
-
-      //Kamera stop'da olduğu ve daha önce handDetection başlatıldığı için
-      //stream başlatmak yeterli.
-      handDetection.start_stream();
-
-      //Burada hard work yapılmadığı için 1 saniyelik bekleme süresi yeterli.
-      initial_wait = 1;
-
-      //Oyun durumu "restart game" den "playing" e dönüştü.
-      //Çünkü kullanıcı retry tuşuna bastı.
-      condition = "playing";
-    }
+    initial_wait = 1;
   }
 
   @override
-  bool onTapUp(TapUpDetails tapUpDetails) {
+  bool onTapUp(TapUpInfo tapUp) {
     if (condition == "initialized") {
       condition = "playing";
     } else if (condition == "game finished") {
