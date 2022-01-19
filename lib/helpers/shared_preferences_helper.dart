@@ -7,7 +7,6 @@ class SharedPreferencesHelper {
   //Method that returns the best score of user.
   static Future<int> getBestScore() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-
     try {
       int returnScore = int.parse(prefs.getString("bestScore"));
       return returnScore;
@@ -19,6 +18,10 @@ class SharedPreferencesHelper {
   //Method that saves the best score of user.
   static Future<bool> setBestScore(int score) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.setString(_bestScore, score.toString());
+    try {
+      return prefs.setString(_bestScore, score.toString());
+    } on Exception {
+      //TODO:...
+    }
   }
 }

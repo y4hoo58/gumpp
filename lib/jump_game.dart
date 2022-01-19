@@ -9,6 +9,7 @@ import 'package:gumpp/app_params.dart';
 import 'package:gumpp/helpers/shared_preferences_helper.dart';
 import 'package:gumpp/game/unvisible/game_engine.dart';
 import 'package:gumpp/helpers/hand_detection/hand_detection.dart';
+import 'package:gumpp/design_params.dart';
 
 class JumpGame extends FlameGame with TapDetector {
   GameEngine gameEngine;
@@ -23,10 +24,13 @@ class JumpGame extends FlameGame with TapDetector {
   }
 
   void initGame() async {
-    gameEngine = GameEngine();
-
+    await Future.delayed(const Duration(milliseconds: 50));
     handDetection = HandDetection();
-    handDetection.initialization();
+    await Future.delayed(const Duration(milliseconds: 250));
+    await handDetection.initialization();
+    await Future.delayed(const Duration(milliseconds: 250));
+    gameEngine = GameEngine();
+    AppParams.gameState = -1;
   }
 
   @override
@@ -34,6 +38,7 @@ class JumpGame extends FlameGame with TapDetector {
     switch (AppParams.gameState) {
       case -3:
         finishGame();
+        AppParams.gameState = -4;
         break;
       case -2:
         handDetection.startLoop();
@@ -63,12 +68,17 @@ class JumpGame extends FlameGame with TapDetector {
         handDetection.x_hand,
         handDetection.y_hand,
       );
+      if (AppParams.totalScore > AppParams.bestScore) {
+        AppParams.bestScore = AppParams.totalScore;
+      }
 
       if (isCharDied) {
-        //Eğer karakter öldüyse yeni best score'u kaydet.
-        if (AppParams.totalScore > AppParams.bestScore) {
-          setBestScore(AppParams.bestScore);
-        }
+        //Karakter her öldüğünde bestscore u kaydeder.
+        //Total score la bestscore karşılaştırıp yapmama sebebi,
+        //total score un zaten bestscore a eşit olması.
+        //TODO:bool lu bir şey ayarla. Her defasında kaydetmesin.
+        setBestScore();
+
         return 1;
       } else {
         return AppParams.gameState;
@@ -76,9 +86,8 @@ class JumpGame extends FlameGame with TapDetector {
     }
   }
 
-  //TODO: Çalıştırılacak.
-  void setBestScore(int best_score) async {
-    SharedPreferencesHelper.setBestScore(best_score);
+  void setBestScore() async {
+    SharedPreferencesHelper.setBestScore(AppParams.bestScore);
   }
 
   void resetGame() {
@@ -88,18 +97,13 @@ class JumpGame extends FlameGame with TapDetector {
   }
 
   void finishGame() async {
-    await Future.delayed(
-      const Duration(milliseconds: 25),
-    );
-
-    handDetection.disposeDetectionLoop();
-
-    handDetection = null;
-    await Future.delayed(
-      const Duration(milliseconds: 100),
-    );
-
     gameEngine = null;
+    //TODO: Dispose yapmak mı yoksa doğrudan null yapmak mı daha iyi? Direkt null
+    //yapınca crash yaşanıyor mu kamerada?
+    //handDetection = null;
+    handDetection.disposeDetectionLoop();
+    await Future.delayed(const Duration(milliseconds: 100));
+
     onLose();
   }
 
@@ -111,13 +115,39 @@ class JumpGame extends FlameGame with TapDetector {
   }
 
   @override
+  bool onTapDown(TapDownInfo tapDown) {
+    switch (AppParams.gameState) {
+      case 1:
+        final int _gameState = changeColor(tapDown);
+        if (_gameState == -2) {
+          DesignParams.setRetryButCol(true);
+        } else if (_gameState == -3) {
+          DesignParams.setMenuButCol(true);
+        }
+        break;
+    }
+    return true;
+  }
+
+  @override
+  bool onTapCancel() {
+    DesignParams.setRetryButCol(false);
+    DesignParams.setMenuButCol(false);
+  }
+
+  @override
   bool onTapUp(TapUpInfo tapUp) {
     switch (AppParams.gameState) {
       case -1:
         AppParams.gameState = 0;
         break;
       case 1:
-        AppParams.gameState = compButtons(tapUp);
+        final int _gameState = compButtons(tapUp);
+
+        DesignParams.setRetryButCol(false);
+        DesignParams.setMenuButCol(false);
+        AppParams.gameState = _gameState;
+        AppParams.totalScore = 50000;
         break;
     }
     return true;
@@ -130,14 +160,50 @@ class JumpGame extends FlameGame with TapDetector {
     //Eğer "retry" butonuna basılırsa gamestate'i oyuna retry atılacak şekilde güncelle.
     //TODO : x sınır koşullarını da ekle
     if (yTap > AppParams.gameSize[1] * 0.69 &&
-        yTap < AppParams.gameSize[1] * 0.79) {
-      return -2;
+        yTap < AppParams.gameSize[1] * 0.765) {
+      if (xTap > AppParams.gameSize[0] * 0.25 &&
+          xTap < AppParams.gameSize[0] * 0.75) {
+        return -2;
+      } else {
+        return AppParams.gameState;
+      }
     }
     //Eğer "menu" butonuna basılırsa gamestate'i oyunu sıfırlayacak şekilde güncelle.
     //TODO : x sınır koşullarını da ekle
     if (yTap > AppParams.gameSize[1] * 0.84 &&
-        yTap < AppParams.gameSize[1] * 0.95) {
-      return -3;
+        yTap < AppParams.gameSize[1] * 0.915) {
+      if (xTap > AppParams.gameSize[0] * 0.25 &&
+          xTap < AppParams.gameSize[0] * 0.75) {
+        return -3;
+      } else {
+        return AppParams.gameState;
+      }
+    }
+
+    return AppParams.gameState;
+  }
+
+  int changeColor(TapDownInfo tapDown) {
+    final double xTap = tapDown.eventPosition.global.x;
+    final double yTap = tapDown.eventPosition.global.y;
+
+    //Eğer "retry" butonuna basılırsa gamestate'i oyuna retry atılacak şekilde güncelle.
+    //TODO : x sınır koşullarını da ekle
+    if (yTap > AppParams.gameSize[1] * 0.69 &&
+        yTap < AppParams.gameSize[1] * 0.765) {
+      if (xTap > AppParams.gameSize[0] * 0.25 &&
+          xTap < AppParams.gameSize[0] * 0.75) {
+        return -2;
+      }
+    }
+    //Eğer "menu" butonuna basılırsa gamestate'i oyunu sıfırlayacak şekilde güncelle.
+    //TODO : x sınır koşullarını da ekle
+    if (yTap > AppParams.gameSize[1] * 0.84 &&
+        yTap < AppParams.gameSize[1] * 0.915) {
+      if (xTap > AppParams.gameSize[0] * 0.25 &&
+          xTap < AppParams.gameSize[0] * 0.75) {
+        return -3;
+      }
     }
 
     return AppParams.gameState;

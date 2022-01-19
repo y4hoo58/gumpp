@@ -15,12 +15,6 @@ class CameraHelper {
   bool isCamContWorking;
   bool isStreaming;
 
-  //TODO: final koydun unutma!!
-  //TODO: final koydun unutma!!
-  //TODO: final koydun unutma!!
-  //TODO: final koydun unutma!!
-  //TODO: final koydun unutma!!
-  //TODO: final koydun unutma!!
   final buffer = Float32List.view(Float32List(1 * 128 * 128 * 3).buffer);
 
   CameraHelper() {
@@ -92,6 +86,7 @@ class CameraHelper {
       if (isFrontCam == false) {
         try {
           await TorchLight.enableTorch();
+          AppParams.isFlashOn = true;
         } on Exception catch (_) {}
       }
     }
@@ -102,6 +97,7 @@ class CameraHelper {
       if (isFrontCam == false) {
         try {
           await TorchLight.disableTorch();
+          AppParams.isFlashOn = false;
         } on Exception catch (_) {}
       }
       await cameraController.stopImageStream();
@@ -118,6 +114,7 @@ class CameraHelper {
       if (isFrontCam == false) {
         try {
           await TorchLight.disableTorch();
+          AppParams.isFlashOn = false;
         } on Exception catch (_) {}
       }
     }

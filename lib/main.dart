@@ -10,6 +10,8 @@ import 'package:tflite_flutter/tflite_flutter.dart';
 
 import 'package:is_first_run/is_first_run.dart';
 
+import 'package:torch_light/torch_light.dart';
+
 import 'package:gumpp/app_params.dart';
 import 'package:gumpp/helpers/shared_preferences_helper.dart';
 import 'package:gumpp/widgets/playbutton.dart';
@@ -48,7 +50,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _initGoogleMobileAds();
     load_bestScore();
     checkIfTutorial();
+    checkIfFlashOn();
     super.initState();
+  }
+
+  void checkIfFlashOn() async {
+    if (AppParams.isFlashOn) {
+      try {
+        await TorchLight.disableTorch();
+      } on Exception catch (_) {}
+    }
   }
 
   void init() async {
@@ -78,9 +89,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
     //Eğer daha önceden bestscore kaydedilmediyse null döndürüyor.
     if (bestScore == null) {
-      bestScore = 0;
-      set_bestScore(bestScore);
+      set_bestScore(0);
     }
+
     AppParams.bestScore = bestScore;
   }
 
@@ -99,6 +110,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    checkIfFlashOn();
     AppParams.gameSize = [
       MediaQuery.of(context).size.width,
       MediaQuery.of(context).size.height,

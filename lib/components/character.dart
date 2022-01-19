@@ -72,9 +72,9 @@ class MyCharacter {
     //Current location as float.
     double x_float = center_x / AppParams.gameSize[0];
 
-    if (AppParams.currentGameMode == -1) {
-      x_hand = (1 - x_hand).abs();
-    }
+    // if (AppParams.currentGameMode == -1) {
+    //   x_hand = (1 - x_hand).abs();
+    // }
     double dist = (x_float - x_hand).abs();
 
     double pow_dist = pow(dist, 1.5 + (dist / 2));
@@ -155,7 +155,7 @@ class MyCharacter {
   void render(Canvas canvas, double y_hand, double average_box_area) {
     final center = Offset(center_x, center_y);
 
-    paint.color = Colors.white;
+    paint.color = Colors.yellow.shade100;
     canvas.drawCircle(center, radius, paint);
 
     if (y_hand != null) {

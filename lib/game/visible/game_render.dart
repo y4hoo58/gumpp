@@ -5,6 +5,7 @@ import 'package:gumpp/components/sticks/sticks.dart';
 import 'package:gumpp/helpers/shared_preferences_helper.dart';
 
 import 'package:gumpp/app_params.dart';
+import 'package:gumpp/design_params.dart';
 
 class GameRender {
   List<Stick> all_sticks;
@@ -12,8 +13,6 @@ class GameRender {
 
   double y_hand;
   double prediction_box_area;
-
-  int bestScore = AppParams.bestScore;
 
   GameRender() {}
 
@@ -101,7 +100,7 @@ class GameRender {
   //Render score at the end of the game and during the gameplay.
   void render_score_text(Canvas canvas) {
     final textStyle = TextStyle(
-        color: Colors.cyan.shade100,
+        color: Colors.yellow.shade100,
         fontSize: AppParams.gameSize[0] * 0.09,
         fontWeight: FontWeight.w700);
 
@@ -130,7 +129,7 @@ class GameRender {
   //Render the score.
   void render_score(Canvas canvas, opacityy) {
     final textStyle = TextStyle(
-        color: Colors.cyan.shade100.withOpacity(opacityy),
+        color: Colors.yellow.shade100.withOpacity(opacityy),
         fontSize: AppParams.gameSize[0] * 0.2,
         fontWeight: FontWeight.w900);
 
@@ -184,8 +183,7 @@ class GameRender {
 
     //Button background color.
     final bgPaint = Paint();
-    bgPaint.color = Colors.cyan.shade100;
-
+    bgPaint.color = DesignParams.retryButCol;
     canvas.drawRect(bgRect, bgPaint);
     textPainter.paint(canvas, textOffset);
 
@@ -226,7 +224,7 @@ class GameRender {
 
     //Button background color.
     final bgPaint = Paint();
-    bgPaint.color = Colors.cyan.shade100;
+    bgPaint.color = DesignParams.menuButCol;
 
     canvas.drawRect(bgRect, bgPaint);
     textPainter.paint(canvas, textOffset);
@@ -238,7 +236,7 @@ class GameRender {
   void render_best(Canvas canvas) {
     //Render best text.
     final bestStyle = TextStyle(
-        color: Colors.cyan.shade100,
+        color: Colors.yellow.shade100,
         fontSize: AppParams.gameSize[0] * 0.1,
         fontWeight: FontWeight.w900);
 
@@ -262,13 +260,13 @@ class GameRender {
 
     //Render score text.
     final scoreStyle = TextStyle(
-        color: Colors.cyan.shade100,
+        color: Colors.yellow.shade100,
         fontSize: AppParams.gameSize[0] * 0.1,
         fontWeight: FontWeight.w200);
 
     //TODO: Best score kaydetmeyi ayarladığın zaman burayı düzeltmeyi unutma.
     final scoreSpan = TextSpan(
-      text: bestScore.toString(),
+      text: AppParams.bestScore.toString(),
       //text: score.round().toString(),
       style: scoreStyle,
     );
@@ -291,7 +289,7 @@ class GameRender {
   //Renders the tap to play button.
   void render_tap_screen(Canvas canvas) {
     final textStyle = TextStyle(
-        color: Colors.cyan.shade100,
+        color: Colors.yellow.shade100,
         fontSize: AppParams.gameSize[0] * 0.1,
         fontWeight: FontWeight.w900);
 

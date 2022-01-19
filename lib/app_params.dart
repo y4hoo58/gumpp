@@ -1,3 +1,5 @@
+import 'package:gumpp/jump_game.dart';
+
 class AppParams {
   // Tflite modelinin hafızada ki adresini tutar.
   // Uygulama açıldığı anda interpreter hafızaya yüklenir.
@@ -18,13 +20,14 @@ class AppParams {
   static List<double> gameSize;
 
   //gameState:
+  //-4  : Finishgame çalıştırıldı
   //-3  : Menuye dönüldü
   //-2  : Retry atıldı
   //-1  : Bekleme ekranında bekliyor
   // 0  : Oyun devam ediyor
   // 1  : Player Öldü
   // 2  : Kamera bekleniyor
-  static int gameState;
+  static int gameState = -999;
 
   //-1 : Reverse
   // 0 : No mode
@@ -32,11 +35,11 @@ class AppParams {
 
   static bool isPlayer1Selected;
 
-  static const int maxPoints = 5;
+  static int bestScore = 0;
 
-  static int bestScore;
+  static int totalScore = 50000;
 
-  static int totalScore = 0;
+  static bool isTutorial = false;
 
-  static bool isTutorial;
+  static bool isFlashOn = false;
 }

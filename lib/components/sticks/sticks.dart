@@ -23,11 +23,11 @@ class Stick {
   void render(Canvas canvas) {
     final paint = Paint();
     if (stick_type == "normal") {
-      paint.color = Colors.yellow.shade100;
+      paint.color = Colors.cyanAccent.shade100;
     } else if (stick_type == "inverse") {
       paint.color = Colors.red;
     } else if (stick_type == "boosted") {
-      paint.color = Colors.green;
+      paint.color = Colors.greenAccent.shade400;
     } else if (stick_type == "bonus") {
       paint.color = Colors.pink;
     }

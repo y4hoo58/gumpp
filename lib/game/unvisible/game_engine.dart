@@ -101,7 +101,7 @@ class GameEngine {
       stick_type = all_sticks[col_list[1]].stick_type;
       //Eğer cezalı veya ödüllü sticklere temas gerçekleştiyse
       //oyun modunu değiştirir.
-      change_game_mode(stick_type);
+      change_game_mode(stick_type, col_list[1]);
 
       //Karakterin zıplamasını sağlar.Karakterin y konumunu tekrardan günceller.
       myCharacter.bounce_the_ball(y_correction, stick_type);
@@ -183,43 +183,11 @@ class GameEngine {
     }
   }
 
-  void change_game_mode(String stick_type) {
+  void change_game_mode(String stick_type, int stickIndex) {
     if (stick_type == "bonus") {
       randomizeSticks();
-      if (AppParams.currentGameMode == -1) {
-        change_stick_reversity();
-      }
-    } else if (AppParams.currentGameMode == 0 && stick_type == "inverse") {
-      change_stick_reversity();
-    } else if (AppParams.currentGameMode == -1 && stick_type != "inverse") {
-      change_stick_reversity();
-    }
-  }
-
-  //TODO : DÜZELTİLECEK
-  void change_stick_reversity() {
-    if (AppParams.currentGameMode == 0) {
-      for (var i = 0; i < all_sticks.length; i++) {
-        all_sticks[i].center_x =
-            (AppParams.gameSize[0] - all_sticks[i].center_x).abs();
-        if (all_sticks[i].direction == 1) {
-          all_sticks[i].direction = -1;
-        } else {
-          all_sticks[i].direction = 1;
-        }
-      }
-      AppParams.currentGameMode = -1;
-    } else if (AppParams.currentGameMode == -1) {
-      for (var i = 0; i < all_sticks.length; i++) {
-        all_sticks[i].center_x =
-            (AppParams.gameSize[0] - all_sticks[i].center_x).abs();
-        if (all_sticks[i].direction == 1) {
-          all_sticks[i].direction = -1;
-        } else {
-          all_sticks[i].direction = 1;
-        }
-      }
-      AppParams.currentGameMode = 0;
+    } else if (stick_type == "inverse") {
+      deleteBouncedStick(stickIndex);
     }
   }
 
@@ -236,6 +204,10 @@ class GameEngine {
               .toDouble() +
           (all_sticks[i].width);
     }
+  }
+
+  void deleteBouncedStick(int stickIndex) {
+    all_sticks.removeAt(stickIndex);
   }
 
   void updateScore() {

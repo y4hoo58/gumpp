@@ -9,8 +9,8 @@ class MenuPainterr extends StatefulWidget {
 
 class MenuPainterrState extends State<MenuPainterr>
     with TickerProviderStateMixin {
-  final List<double> stick_xs = [0.3, 0.5, 0.3, 0.9, 0.5, 0.2, 0.6, 0.4];
-  final List<double> stick_ys = [2, 6, 8, 13, 15, 18, 19, 21, 23];
+  final List<double> stick_xs = [0.3, 0.75, 0.3, 0.85, 0.5, 0.2];
+  final List<double> stick_ys = [2, 6, 8, 13, 15, 18, 19];
 
   Animation<double> animation;
   AnimationController controller;
@@ -82,7 +82,7 @@ class MenuPainter extends CustomPainter {
 
     final center = Offset(render_x, render_y);
     final paint = Paint();
-    paint.color = Colors.white;
+    paint.color = Colors.yellow.shade100;
     canvas.drawCircle(center, radius, paint);
   }
 
@@ -96,10 +96,18 @@ class MenuPainter extends CustomPainter {
     for (var i = 0; i < stick_xs.length; i++) {
       final stick_paint = Paint();
 
-      stick_paint.color = Colors.yellow.shade100;
-
       double render_x = stick_xs[i] * size.width - width * 0.5;
       double render_y = stick_ys[i] * size.height * 0.05 - height * 0.5;
+
+      if (stick_ys[i] > 5 && stick_ys[i] < 7) {
+        stick_paint.color = Colors.greenAccent.shade400;
+      } else if (stick_ys[i] > 7 && stick_ys[i] < 10) {
+        stick_paint.color = Colors.pink;
+      } else if (stick_ys[i] > 14 && stick_ys[i] < 18) {
+        stick_paint.color = Colors.red;
+      } else {
+        stick_paint.color = Colors.cyanAccent.shade100;
+      }
 
       Rect stick_rect = Rect.fromLTWH(render_x, render_y, width, height);
       canvas.drawRect(stick_rect, stick_paint);
