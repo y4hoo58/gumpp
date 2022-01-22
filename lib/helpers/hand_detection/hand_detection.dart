@@ -5,7 +5,7 @@ import 'dart:typed_data';
 import 'dart:isolate';
 import 'dart:async';
 
-import 'package:torch_light/torch_light.dart';
+//import 'package:torch_light/torch_light.dart';
 
 import 'package:gumpp/helpers/hand_detection/camera_helper.dart';
 import 'package:gumpp/helpers/hand_detection/hand_detection_isolate.dart';
@@ -66,7 +66,10 @@ class HandDetection {
 //        Stopwatch predictWatch = new Stopwatch()..start();
 
         cameraHelper.isNewBuffer = false;
-        await predict(cameraHelper.buffer);
+        if (AppParams.gameState == 0) {
+          await predict(cameraHelper.buffer);
+        }
+
 //        await Future.delayed(Duration(milliseconds: 10));
 
 //        int pwatch = predictWatch.elapsed.inMicroseconds;
@@ -77,7 +80,9 @@ class HandDetection {
   }
 
   void disposeDetectionLoop() async {
+    isolateUtils.stop();
     await cameraHelper.disposeCam();
+    cameraHelper = null;
   }
 
   void predict(var buffer) async {

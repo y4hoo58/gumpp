@@ -28,8 +28,10 @@ class MyGameWidget extends StatelessWidget {
       jumpGame = JumpGame();
     }
     jumpGame.onLose = () => onLose(context);
-    return GameWidget(
-      game: jumpGame,
-    );
+    return WillPopScope(
+        onWillPop: () async => false,
+        child: GameWidget(
+          game: jumpGame,
+        ));
   }
 }

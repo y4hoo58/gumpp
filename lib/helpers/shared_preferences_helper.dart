@@ -38,7 +38,7 @@ class SharedPreferencesHelper {
   static Future<bool> getVoicePref() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     try {
-      final bool voicePref = prefs.getBool(_voicePref);
+      final bool voicePref = await prefs.getBool(_voicePref);
       if (voicePref != null) {
         return voicePref;
       } else {
@@ -61,7 +61,7 @@ class SharedPreferencesHelper {
   static Future<int> getFlashMode() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     try {
-      final int flashMode = prefs.getInt(_flashMode);
+      final int flashMode = await prefs.getInt(_flashMode);
       if (flashMode != null) {
         return flashMode;
       } else {

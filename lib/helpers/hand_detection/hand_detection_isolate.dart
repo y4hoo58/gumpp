@@ -35,6 +35,11 @@ class IsolateUtils {
     _sendPort = await _receivePort.first;
   }
 
+  void stop() {
+    _isolate.kill(priority: Isolate.immediate);
+    _isolate = null;
+  }
+
   static void entryPoint(SendPort sendPort) async {
     final port = ReceivePort();
     sendPort.send(port.sendPort);

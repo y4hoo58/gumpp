@@ -134,6 +134,7 @@ class JumpGame extends FlameGame with TapDetector {
     //yapınca crash yaşanıyor mu kamerada?
     //handDetection = null;
     handDetection.disposeDetectionLoop();
+    handDetection = null;
     await Future.delayed(const Duration(milliseconds: 100));
 
     onLose();

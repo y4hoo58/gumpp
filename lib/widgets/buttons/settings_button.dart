@@ -16,6 +16,8 @@ class SettingsButton extends StatelessWidget {
       width: MediaQuery.of(context).size.width * 0.5,
       height: MediaQuery.of(context).size.height * 0.075,
       child: RawMaterialButton(
+        highlightColor: Colors.white,
+        splashColor: Colors.white,
         fillColor: buttonColor,
         child: const Text(
           "SETTINGS",

@@ -25,7 +25,6 @@ import 'package:gumpp/widgets/title.dart';
 import 'package:gumpp/widgets/menu_painter.dart';
 
 int bestScore = 0;
-bool voicePref = true;
 
 //Main function
 void main() async {
@@ -41,6 +40,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: HomeScreen(),
+      showPerformanceOverlay: true,
     );
   }
 }
@@ -113,7 +113,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   void load_voicePref() async {
-    bool _voicePref = await SharedPreferencesHelper.getVoicePref();
+    final bool _voicePref = await SharedPreferencesHelper.getVoicePref();
+    AppParams.voicePref = _voicePref;
   }
 
   void checkIfTutorial() async {
@@ -137,6 +138,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       MediaQuery.of(context).size.height,
     ];
     return Material(
+      animationDuration: Duration(milliseconds: 0),
       color: Colors.black,
       child: Stack(children: <Widget>[
         MenuPainterr(),
