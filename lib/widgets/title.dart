@@ -72,7 +72,7 @@ class TitleState extends State<TitleWidget> {
       style: GoogleFonts.megrim(
         color: titleColor,
         fontWeight: FontWeight.w900,
-        fontSize: MediaQuery.of(context).size.width * 0.2,
+        fontSize: MediaQuery.of(context).size.height * 0.1,
       ),
     );
   }

@@ -12,16 +12,26 @@ import 'package:is_first_run/is_first_run.dart';
 
 import 'package:torch_light/torch_light.dart';
 
+import 'package:firebase_core/firebase_core.dart';
+
 import 'package:gumpp/app_params.dart';
 import 'package:gumpp/helpers/shared_preferences_helper.dart';
-import 'package:gumpp/widgets/playbutton.dart';
+
+import 'package:gumpp/widgets/buttons/play_button.dart';
+import 'package:gumpp/widgets/buttons/settings_button.dart';
+import 'package:gumpp/widgets/buttons/tutorial_button.dart';
+
 import 'package:gumpp/widgets/title.dart';
 import 'package:gumpp/widgets/menu_painter.dart';
 
 int bestScore = 0;
+bool voicePref = true;
 
 //Main function
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
@@ -49,6 +59,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     load_model();
     _initGoogleMobileAds();
     load_bestScore();
+    load_voicePref();
+    load_flashMode();
     checkIfTutorial();
     checkIfFlashOn();
     super.initState();
@@ -95,6 +107,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     AppParams.bestScore = bestScore;
   }
 
+  void load_flashMode() async {
+    int flashMode = await SharedPreferencesHelper.getFlashMode();
+    AppParams.flashMode = flashMode;
+  }
+
+  void load_voicePref() async {
+    bool _voicePref = await SharedPreferencesHelper.getVoicePref();
+  }
+
   void checkIfTutorial() async {
     AppParams.isTutorial ??= await IsFirstRun.isFirstRun();
   }
@@ -119,26 +140,39 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       color: Colors.black,
       child: Stack(children: <Widget>[
         MenuPainterr(),
-        Column(
-          children: <Widget>[
-            ConstrainedBox(
-              constraints: BoxConstraints(
-                  minHeight: MediaQuery.of(context).size.height * 0.15),
-            ),
-            TitleWidget(),
-            ConstrainedBox(
-              constraints: BoxConstraints(
-                  minHeight: MediaQuery.of(context).size.height * 0.175),
-            ),
-            Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-              PlayButton(true),
+        Container(
+          width: double.infinity,
+          height: double.infinity,
+          child: Column(
+            children: <Widget>[
               ConstrainedBox(
                 constraints: BoxConstraints(
-                    minWidth: MediaQuery.of(context).size.width * 0.05),
+                    minHeight: MediaQuery.of(context).size.height * 0.15),
               ),
-              PlayButton(false),
-            ]),
-          ],
+              TitleWidget(),
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                    minHeight: MediaQuery.of(context).size.height * 0.3),
+              ),
+              Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    PlayButton(),
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight: MediaQuery.of(context).size.height * 0.025,
+                      ),
+                    ),
+                    TutorialButton(),
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight: MediaQuery.of(context).size.height * 0.025,
+                      ),
+                    ),
+                    SettingsButton(),
+                  ]),
+            ],
+          ),
         ),
       ]),
     );

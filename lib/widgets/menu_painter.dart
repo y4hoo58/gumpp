@@ -9,13 +9,13 @@ class MenuPainterr extends StatefulWidget {
 
 class MenuPainterrState extends State<MenuPainterr>
     with TickerProviderStateMixin {
-  final List<double> stick_xs = [0.3, 0.75, 0.3, 0.85, 0.5, 0.2];
-  final List<double> stick_ys = [2, 6, 8, 13, 15, 18, 19];
+  final List<double> stick_xs = [0.2, 0.75, 0.2, 0.8, 0.3, 0.7, 0.15];
+  final List<double> stick_ys = [2, 6, 8, 9, 10.5, 17.5, 19];
 
   Animation<double> animation;
   AnimationController controller;
 
-  final Tween<double> _moving_path = Tween(begin: 0.95, end: 0.05);
+  final Tween<double> _moving_path = Tween(begin: 1, end: 0.1);
 
   MenuPainterrState();
 
@@ -24,7 +24,7 @@ class MenuPainterrState extends State<MenuPainterr>
     super.initState();
     controller = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 400),
+      duration: Duration(milliseconds: 200), //400
     );
 
     animation = _moving_path.animate(controller)
@@ -33,11 +33,11 @@ class MenuPainterrState extends State<MenuPainterr>
       })
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
-          controller.duration = Duration(milliseconds: 600);
+          controller.duration = Duration(milliseconds: 500); //600
 
           controller.reverse();
         } else if (status == AnimationStatus.dismissed) {
-          controller.duration = Duration(milliseconds: 400);
+          controller.duration = Duration(milliseconds: 375);
           controller.forward();
         }
       });
@@ -77,8 +77,9 @@ class MenuPainter extends CustomPainter {
   void move_char(Canvas canvas, Size size, double width) {
     //TODO: width parametresini hiç kullanmamışsın sanki???
     double radius = size.width * 0.05;
-    double render_x = 0.2 * size.width;
-    double render_y = (0.65 + (center_y * center_y * 0.25)) * size.height;
+    double render_x = 0.55 * size.width;
+    double render_y =
+        (0.45 + (center_y * center_y * center_y * 0.1)) * size.height;
 
     final center = Offset(render_x, render_y);
     final paint = Paint();

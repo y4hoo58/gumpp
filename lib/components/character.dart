@@ -158,21 +158,21 @@ class MyCharacter {
     paint.color = Colors.yellow.shade100;
     canvas.drawCircle(center, radius, paint);
 
-    if (y_hand != null) {
-      if (y_hand > 0.75) {
-        render_alert_one(canvas, paint, center, center_x, center_y);
-      } else if (y_hand < 0.25) {
-        render_alert_two(canvas, paint, center, center_x, center_y);
-      }
-    }
+    // if (y_hand != null) {
+    //   if (y_hand > 0.75) {
+    //     render_alert_one(canvas, paint, center, center_x, center_y);
+    //   } else if (y_hand < 0.25) {
+    //     render_alert_two(canvas, paint, center, center_x, center_y);
+    //   }
+    // }
 
     ///TODO: alert three için hem el boyutu hem de prediction ın ağırlığı gerekiyor.
     ///O şekilde olursa daha güvenilir sonuç alınır. 50 değerinden de eminmisin ayrıca?
-    if (average_box_area != null) {
-      if (sqrt(average_box_area) > 50) {
-        render_alert_three(canvas, paint, center, center_x, center_y);
-      }
-    }
+    // if (average_box_area != null) {
+    //   if (sqrt(average_box_area) > 50) {
+    //     render_alert_three(canvas, paint, center, center_x, center_y);
+    //   }
+    // }
 
     /// KONTROL EDİLDİ.
   }

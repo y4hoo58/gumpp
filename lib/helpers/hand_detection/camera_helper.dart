@@ -11,9 +11,12 @@ class CameraHelper {
   List<CameraDescription> cameras;
 
   bool isFrontCam = AppParams.isFrontCam;
+
   bool isNewBuffer = false;
   bool isCamContWorking;
   bool isStreaming;
+
+  double pixelAverage = 0;
 
   final buffer = Float32List.view(Float32List(1 * 128 * 128 * 3).buffer);
 
@@ -85,8 +88,10 @@ class CameraHelper {
 
       if (isFrontCam == false) {
         try {
-          await TorchLight.enableTorch();
-          AppParams.isFlashOn = true;
+          if (AppParams.flashMode == 1) {
+            await TorchLight.enableTorch();
+            AppParams.isFlashOn = true;
+          }
         } on Exception catch (_) {}
       }
     }
@@ -126,6 +131,7 @@ class CameraHelper {
     final int uvRowStride = cameraImage.planes[1].bytesPerRow;
     final int uvPixelStride = cameraImage.planes[1].bytesPerPixel;
 
+    double pixelTotal = 0;
     double r, g, b, y, u, v;
     int buffer_index = 0;
     double w = 319;
@@ -144,6 +150,8 @@ class CameraHelper {
         r = (y + v * 1436 / 1024 - 179);
         g = (y - u * 46549 / 131072 + 44 - v * 93604 / 131072 + 91);
         b = (y + u * 1814 / 1024 - 227);
+
+        pixelTotal = pixelTotal + (r + g + b);
         buffer[49151 - buffer_index++] = 2 * (b / 255) - 1;
         buffer[49151 - buffer_index++] = 2 * (g / 255) - 1;
         buffer[49151 - buffer_index++] = 2 * (r / 255) - 1;
@@ -162,6 +170,9 @@ class CameraHelper {
         r = (y + v * 1436 / 1024 - 179);
         g = (y - u * 46549 / 131072 + 44 - v * 93604 / 131072 + 91);
         b = (y + u * 1814 / 1024 - 227);
+
+        pixelTotal = pixelTotal + (r + g + b);
+
         buffer[49151 - buffer_index++] = 2 * (b / 255) - 1;
         buffer[49151 - buffer_index++] = 2 * (g / 255) - 1;
         buffer[49151 - buffer_index++] = 2 * (r / 255) - 1;
@@ -180,6 +191,9 @@ class CameraHelper {
         r = (y + v * 1436 / 1024 - 179);
         g = (y - u * 46549 / 131072 + 44 - v * 93604 / 131072 + 91);
         b = (y + u * 1814 / 1024 - 227);
+
+        pixelTotal = pixelTotal + (r + g + b);
+
         buffer[49151 - buffer_index++] = 2 * (b / 255) - 1;
         buffer[49151 - buffer_index++] = 2 * (g / 255) - 1;
         buffer[49151 - buffer_index++] = 2 * (r / 255) - 1;
@@ -204,6 +218,9 @@ class CameraHelper {
         r = (y + v * 1436 / 1024 - 179);
         g = (y - u * 46549 / 131072 + 44 - v * 93604 / 131072 + 91);
         b = (y + u * 1814 / 1024 - 227);
+
+        pixelTotal = pixelTotal + (r + g + b);
+
         buffer[49151 - buffer_index++] = 2 * (b / 255) - 1;
         buffer[49151 - buffer_index++] = 2 * (g / 255) - 1;
         buffer[49151 - buffer_index++] = 2 * (r / 255) - 1;
@@ -222,6 +239,9 @@ class CameraHelper {
         r = (y + v * 1436 / 1024 - 179);
         g = (y - u * 46549 / 131072 + 44 - v * 93604 / 131072 + 91);
         b = (y + u * 1814 / 1024 - 227);
+
+        pixelTotal = pixelTotal + (r + g + b);
+
         buffer[49151 - buffer_index++] = 2 * (b / 255) - 1;
         buffer[49151 - buffer_index++] = 2 * (g / 255) - 1;
         buffer[49151 - buffer_index++] = 2 * (r / 255) - 1;
@@ -240,6 +260,9 @@ class CameraHelper {
         r = (y + v * 1436 / 1024 - 179);
         g = (y - u * 46549 / 131072 + 44 - v * 93604 / 131072 + 91);
         b = (y + u * 1814 / 1024 - 227);
+
+        pixelTotal = pixelTotal + (r + g + b);
+
         buffer[49151 - buffer_index++] = 2 * (b / 255) - 1;
         buffer[49151 - buffer_index++] = 2 * (g / 255) - 1;
         buffer[49151 - buffer_index++] = 2 * (r / 255) - 1;
@@ -263,6 +286,9 @@ class CameraHelper {
         r = (y + v * 1436 / 1024 - 179);
         g = (y - u * 46549 / 131072 + 44 - v * 93604 / 131072 + 91);
         b = (y + u * 1814 / 1024 - 227);
+
+        pixelTotal = pixelTotal + (r + g + b);
+
         buffer[49151 - buffer_index++] = 2 * (b / 255) - 1;
         buffer[49151 - buffer_index++] = 2 * (g / 255) - 1;
         buffer[49151 - buffer_index++] = 2 * (r / 255) - 1;
@@ -281,6 +307,9 @@ class CameraHelper {
         r = (y + v * 1436 / 1024 - 179);
         g = (y - u * 46549 / 131072 + 44 - v * 93604 / 131072 + 91);
         b = (y + u * 1814 / 1024 - 227);
+
+        pixelTotal = pixelTotal + (r + g + b);
+
         buffer[49151 - buffer_index++] = 2 * (b / 255) - 1;
         buffer[49151 - buffer_index++] = 2 * (g / 255) - 1;
         buffer[49151 - buffer_index++] = 2 * (r / 255) - 1;
@@ -300,6 +329,8 @@ class CameraHelper {
         g = (y - u * 46549 / 131072 + 44 - v * 93604 / 131072 + 91);
         b = (y + u * 1814 / 1024 - 227);
 
+        pixelTotal = pixelTotal + (r + g + b);
+
         buffer[49151 - buffer_index++] = 2 * (b / 255) - 1;
         buffer[49151 - buffer_index++] = 2 * (g / 255) - 1;
         buffer[49151 - buffer_index++] = 2 * (r / 255) - 1;
@@ -307,6 +338,7 @@ class CameraHelper {
       }
       w = w - 3;
     }
+    pixelAverage = pixelTotal / (128 * 128 * 3);
     await Future.delayed(Duration(microseconds: 100));
     isNewBuffer = true;
   }

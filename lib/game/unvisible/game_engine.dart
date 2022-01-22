@@ -4,8 +4,10 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+import 'package:flame_audio/flame_audio.dart';
+
 import 'package:gumpp/app_params.dart';
-import 'package:gumpp/tutorial_page.dart';
+// import 'package:gumpp/game/visible/tutorial_page.dart';
 
 import 'package:gumpp/components/character.dart';
 import 'package:gumpp/components/sticks/sticks.dart';
@@ -24,7 +26,7 @@ class GameEngine {
   PhysicsEngine physicsEngine = PhysicsEngine();
   GameDesign gameDesign = GameDesign();
   GameRender gameRender = GameRender();
-  TutorialPage tutorialPage;
+  // TutorialPage tutorialPage;
   MyCharacter myCharacter;
 
   List<Stick> all_sticks = [];
@@ -37,7 +39,7 @@ class GameEngine {
 
   void init_game_engine() {
     if (AppParams.isTutorial) {
-      tutorialPage = TutorialPage();
+      // tutorialPage = TutorialPage();
     }
 
     create_initial_sticks();
@@ -105,6 +107,7 @@ class GameEngine {
 
       //Karakterin zıplamasını sağlar.Karakterin y konumunu tekrardan günceller.
       myCharacter.bounce_the_ball(y_correction, stick_type);
+      playAudio();
     }
 
     //Karakterin ölüp ölmediği temas gerçekleşip gerçekleşmediği kontrol
@@ -125,7 +128,7 @@ class GameEngine {
           return true;
         } else {
           myCharacter.y_speed = AppParams.gameSize[1] * 0.2;
-          tutorialPage.moving_hand_timer = 2;
+          // tutorialPage.moving_hand_timer = 2;
           return false;
         }
       } else {
@@ -133,6 +136,12 @@ class GameEngine {
       }
     } else {
       return false;
+    }
+  }
+
+  void playAudio() {
+    if (AppParams.voicePref == true) {
+      FlameAudio.play("ball_hit.mp3");
     }
   }
 
@@ -223,8 +232,8 @@ class GameEngine {
 
   void render(Canvas canvas) {
     gameRender.render(canvas);
-    if (AppParams.isTutorial) {
-      tutorialPage.render_tutorial_page(canvas);
-    }
+    // if (AppParams.isTutorial) {
+    //   tutorialPage.render_tutorial_page(canvas);
+    // }
   }
 }

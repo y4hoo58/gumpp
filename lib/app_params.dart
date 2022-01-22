@@ -37,9 +37,22 @@ class AppParams {
 
   static int bestScore = 0;
 
-  static int totalScore = 50000;
+  static int totalScore = 0;
 
   static bool isTutorial = false;
 
   static bool isFlashOn = false;
+
+  //static bool showAd = false;
+
+  //TODO : Sharedpreferences eklenecek
+  static bool voicePref = true;
+
+  /*
+   * flashMode:
+   * -1 : off
+   * 0  : auto
+   * 1  : on
+   */
+  static int flashMode = 1;
 }

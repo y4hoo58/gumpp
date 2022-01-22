@@ -10,11 +10,14 @@ import 'package:gumpp/helpers/shared_preferences_helper.dart';
 import 'package:gumpp/game/unvisible/game_engine.dart';
 import 'package:gumpp/helpers/hand_detection/hand_detection.dart';
 import 'package:gumpp/design_params.dart';
+import 'package:gumpp/game/visible/alerts_render.dart';
+import 'package:gumpp/widgets/int_ad_widget.dart';
 
 class JumpGame extends FlameGame with TapDetector {
   GameEngine gameEngine;
   HandDetection handDetection;
-
+  IntAdWidg intAd;
+  AlertsRender alertsRender;
   double initialWait = 2;
 
   Function onLose = () {};
@@ -31,6 +34,8 @@ class JumpGame extends FlameGame with TapDetector {
     await Future.delayed(const Duration(milliseconds: 250));
     gameEngine = GameEngine();
     AppParams.gameState = -1;
+    intAd = IntAdWidg();
+    alertsRender = AlertsRender();
   }
 
   @override
@@ -39,19 +44,26 @@ class JumpGame extends FlameGame with TapDetector {
       case -3:
         finishGame();
         AppParams.gameState = -4;
+
         break;
       case -2:
         handDetection.startLoop();
         resetGame();
         AppParams.gameState = 0;
+        alertsRender = AlertsRender();
         break;
       case -1:
+        AppParams.totalScore = 0;
         break;
       case 0:
         AppParams.gameState = playGame(t);
         break;
       case 1:
+        if (intAd.interstitialAd != null) {
+          intAd.interstitialAd.show();
+        }
         handDetection.stopLoop();
+        alertsRender = null;
         break;
       case 2:
         break;
@@ -63,21 +75,39 @@ class JumpGame extends FlameGame with TapDetector {
       initialWait = initialWait - t;
       return AppParams.gameState;
     } else {
+      if (AppParams.isTutorial == true) {
+        alertsRender.renderAlert(
+          handDetection.x_hand,
+          handDetection.y_hand,
+          handDetection.max_area,
+        );
+      }
+
       bool isCharDied = gameEngine.update(
         t,
         handDetection.x_hand,
         handDetection.y_hand,
       );
+
       if (AppParams.totalScore > AppParams.bestScore) {
-        AppParams.bestScore = AppParams.totalScore;
+        if (AppParams.isTutorial == false) {
+          AppParams.bestScore = AppParams.totalScore;
+        }
       }
 
       if (isCharDied) {
+        if (!intAd.isInterstitialAdReady) {
+          intAd.loadInterstitialAd();
+        }
         //Karakter her öldüğünde bestscore u kaydeder.
         //Total score la bestscore karşılaştırıp yapmama sebebi,
         //total score un zaten bestscore a eşit olması.
         //TODO:bool lu bir şey ayarla. Her defasında kaydetmesin.
         setBestScore();
+
+        if (AppParams.isTutorial = true) {
+          AppParams.isTutorial = false;
+        }
 
         return 1;
       } else {
@@ -87,7 +117,9 @@ class JumpGame extends FlameGame with TapDetector {
   }
 
   void setBestScore() async {
-    SharedPreferencesHelper.setBestScore(AppParams.bestScore);
+    if (AppParams.isTutorial == false) {
+      SharedPreferencesHelper.setBestScore(AppParams.bestScore);
+    }
   }
 
   void resetGame() {
@@ -111,6 +143,9 @@ class JumpGame extends FlameGame with TapDetector {
   void render(Canvas canvas) {
     if (gameEngine != null) {
       gameEngine.render(canvas);
+      if (AppParams.gameState == 0) {
+        alertsRender.render(canvas);
+      }
     }
   }
 
@@ -147,7 +182,10 @@ class JumpGame extends FlameGame with TapDetector {
         DesignParams.setRetryButCol(false);
         DesignParams.setMenuButCol(false);
         AppParams.gameState = _gameState;
-        AppParams.totalScore = 50000;
+        if (_gameState == -2) {
+          AppParams.totalScore = 0;
+        }
+
         break;
     }
     return true;

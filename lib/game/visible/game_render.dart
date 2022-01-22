@@ -42,7 +42,9 @@ class GameRender {
     myCharacter.render(canvas, y_hand, prediction_box_area);
 
     //Best score'u renderlar.
-    render_best(canvas);
+    if (AppParams.isTutorial == false) {
+      render_best(canvas);
+    }
 
     //Eğer tap screen renderlanması gerekiyorsa, oyun ekranının üzerine tap screen'i
     //renderlar. Eğer oyun bittiyse aynı şeyi finish screen için gerçekleştirir.

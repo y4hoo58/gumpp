@@ -30,15 +30,15 @@ dependencies:
   flutter:
     sdk: flutter
   flame: ^1.0.0
+  flame_audio: ^1.0.0
+  audioplayers: ^0.20.1
   camera: ^0.9.4+5
   tflite_flutter: ^0.9.0
   image: ^3.0.2
   path_provider: ^2.0.2
-  audioplayers: ^0.18.3
   flutter_isolate: ^2.0.0
   is_first_run: ^1.0.0
   google_mobile_ads: ^1.0.1
-  flutter_flashlight: ^1.0.0
   torch_light: ^0.4.0
   shared_preferences: ^2.0.11
   google_fonts: ^2.1.1
@@ -47,6 +47,7 @@ dependencies:
   firebase_performance: ^0.8.0+3
   firebase_crashlytics: ^2.4.4
   flutter_launcher_icons: ^0.9.0
+  firebase_remote_config: ^1.0.4
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -83,6 +84,7 @@ flutter:
   assets:
     - assets/images/
     - assets/palm_detection.tflite
+    - assets/audio/ball_hit.mp3
 
   # To add assets to your application, add an assets section, like this:
   # assets:

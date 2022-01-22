@@ -5,6 +5,8 @@ import 'dart:typed_data';
 import 'dart:isolate';
 import 'dart:async';
 
+import 'package:torch_light/torch_light.dart';
+
 import 'package:gumpp/helpers/hand_detection/camera_helper.dart';
 import 'package:gumpp/helpers/hand_detection/hand_detection_isolate.dart';
 import 'package:gumpp/helpers/hand_detection/hand_det_const.dart';
@@ -26,6 +28,7 @@ class HandDetection {
 
   double p_weight = 0;
   double prediction_count = 0;
+  double max_area = 1;
 
   bool isLoop;
   bool isFrontCam = AppParams.isFrontCam;
@@ -140,14 +143,19 @@ class HandDetection {
         x_hand = x_hand * 0.5;
 
         y_hand = y_weighted / total_weight;
-        y_hand = (1 - y_hand).abs();
+        y_hand = (y_hand - 0.2) / (0.6);
+
         p_weight = total_weight / prediction_count;
+        this.max_area = max_area * 128 * 128;
       } else if (isFrontCam == false) {
         x_hand = x_weighted / total_weight;
         x_hand = (((x_hand - 0.35) / (0.3)));
 
         y_hand = y_weighted / total_weight;
+        y_hand = (1 - y_hand).abs();
+        y_hand = (y_hand - 0.2) / (0.6);
         p_weight = total_weight / prediction_count;
+        this.max_area = max_area * 128 * 128;
       }
       box_areas = [];
     } else {
