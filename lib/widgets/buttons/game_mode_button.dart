@@ -23,7 +23,7 @@ class GameModeBut extends StatefulWidget {
 class GameModeButState extends State<GameModeBut> {
   final bool isFrontCam;
   final bool isTutorial;
-  bool isLoading = true;
+
   RemoteConfigService _remoteConfigService;
 
   Color buttonColor = Colors.yellow.shade100;
@@ -89,7 +89,7 @@ class GameModeButState extends State<GameModeBut> {
       fillColor: buttonColor,
       onPressed: () {
         AppParams.isFrontCam = isFrontCam;
-        AppParams.isTutorial = isTutorial;
+        AppParams.isTraining = isTutorial;
         Navigator.of(context).push(MaterialPageRoute(builder: (context) {
           return Stack(
             children: <Widget>[

@@ -6,7 +6,7 @@ class HDetConst {
   static const double options_h_scale = 128.0;
   static const double options_w_scale = 128.0;
 
-  static const double detection_threshold = 0.5;
+  static const double detection_threshold = 0.75;
 
   //Anchors
   static const List<double> anchorsX = [

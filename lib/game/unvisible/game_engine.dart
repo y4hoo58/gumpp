@@ -38,10 +38,6 @@ class GameEngine {
   }
 
   void init_game_engine() {
-    if (AppParams.isTutorial) {
-      // tutorialPage = TutorialPage();
-    }
-
     create_initial_sticks();
 
     myCharacter = MyCharacter();
@@ -123,7 +119,7 @@ class GameEngine {
     updateScore();
 
     if (is_char_died) {
-      if (AppParams.isTutorial) {
+      if (AppParams.isTutorial || AppParams.isTraining) {
         if (AppParams.totalScore > 10000) {
           return true;
         } else {
@@ -232,8 +228,5 @@ class GameEngine {
 
   void render(Canvas canvas) {
     gameRender.render(canvas);
-    // if (AppParams.isTutorial) {
-    //   tutorialPage.render_tutorial_page(canvas);
-    // }
   }
 }

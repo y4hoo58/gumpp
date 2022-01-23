@@ -40,8 +40,12 @@ class AppParams {
   static int totalScore = 0;
 
   static bool isTutorial = false;
+  static bool isTraining = false;
 
   static bool isFlashOn = false;
+  //Herhangi bir bug'a sebep olmasın ve çok mühim olmadığı için şimdilik
+  //true başlatmak sıkıntı olmaz.
+  //static bool isHandOnImage = true;
 
   //static bool showAd = false;
 

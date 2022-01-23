@@ -62,9 +62,9 @@ class GameDesign {
   }
 
   double calc_stick_speed(double screenwidth) {
-    if (AppParams.totalScore < 2000) {
+    if (AppParams.totalScore < 1000) {
       return 0.0;
-    } else if (AppParams.totalScore >= 2000 && AppParams.totalScore < 4000) {
+    } else if (AppParams.totalScore >= 1000 && AppParams.totalScore < 4000) {
       var rng = Random();
       int is_moving_rand = rng.nextInt(100);
       if (is_moving_rand < 10) {

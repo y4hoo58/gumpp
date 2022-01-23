@@ -25,7 +25,7 @@ class TutorialButtonState extends State<TutorialButton> {
         splashColor: Colors.white,
         fillColor: buttonColor,
         child: const Text(
-          "TUTORIAL",
+          "TRAINING",
           style: TextStyle(
             backgroundColor: Colors.transparent,
             color: Colors.black,

@@ -9,27 +9,68 @@ class GameModWidg extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
+      width: double.infinity,
+      height: double.infinity,
       child: Dialog(
         insetPadding: EdgeInsets.zero,
         backgroundColor: Colors.black87,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-              GameModeBut(
-                true,
-                isTutorial,
+            Text(
+              "CAMERA",
+              style: TextStyle(
+                fontSize: MediaQuery.of(context).size.height * 0.05,
+                fontWeight: FontWeight.w900,
+                color: Colors.blueGrey,
               ),
-              ConstrainedBox(
-                constraints: BoxConstraints(
-                  minWidth: MediaQuery.of(context).size.width * 0.05,
+            ),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.05,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                GameModeBut(
+                  true,
+                  isTutorial,
                 ),
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minWidth: MediaQuery.of(context).size.width * 0.05,
+                  ),
+                ),
+                GameModeBut(
+                  false,
+                  isTutorial,
+                ),
+              ],
+            ),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.05,
+            ),
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.3,
+              height: MediaQuery.of(context).size.height * 0.075,
+              child: RawMaterialButton(
+                highlightColor: Colors.white,
+                splashColor: Colors.white,
+                fillColor: Colors.yellow.shade100,
+                child: const Text(
+                  "BACK",
+                  style: TextStyle(
+                    backgroundColor: Colors.transparent,
+                    color: Colors.black,
+                    //TODO : fontsize parametereleştirilecek
+                    fontSize: 30,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
               ),
-              GameModeBut(
-                false,
-                isTutorial,
-              ),
-            ]),
+            )
           ],
         ),
       ),

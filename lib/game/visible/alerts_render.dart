@@ -8,13 +8,14 @@ import 'package:gumpp/app_params.dart';
 
 //Priority uzaklık>yükseklik =  alçaklık
 class AlertsRender {
-  Sprite rearCamSprite;
   Sprite handSprite;
 
   double tgCenterX, tgCenterY, tgStepSize;
   double handCenterX, handCenterY;
 
   double xHand, yHand, maxArea;
+  double zoomOutScale = 0.75;
+
   /*alertRendering:
   * 0 : No alert
   * 1 : Moving right
@@ -30,7 +31,6 @@ class AlertsRender {
   }
 
   void init() async {
-    rearCamSprite = Sprite(await Flame.images.load("rear_cam_sprite.png"));
     handSprite = Sprite(await Flame.images.load("hand_sprite.png"));
   }
 
@@ -41,24 +41,24 @@ class AlertsRender {
     this.xHand = xHand;
     this.maxArea = maxArea;
 
-    if (yHand > 0.1 &&
-        yHand < 0.9 &&
-        (alertRendering == 2 || alertRendering == 3)) {
-      isRender = false;
-      alertRendering = 0;
-    }
+    // //Eğer fotoda el algılanamadıysa default değerleri kullan.
+    // if (AppParams.isHandOnImage == false) {
+    //   this.maxArea = 0;
+    //   this.yHand = 0.5;
+    // }
 
-    if (sqrt(maxArea) < 50 && alertRendering == 1) {
+    if (alertRendering == 0) {
       isRender = false;
-      alertRendering = 0;
     }
 
     //Yukarı ya da aşağı hareketi seçer
     if (yHand > 0.9 && alertRendering == 0) {
+      zoomOutScale = 0.75;
       setHandDownCoords();
       alertRendering = 3;
       isRender = true;
     } else if (yHand < 0.1 && alertRendering == 0) {
+      zoomOutScale = 0.75;
       setHandUpCoords();
       alertRendering = 2;
       isRender = true;
@@ -67,31 +67,28 @@ class AlertsRender {
     //Eğer yakınlık yüksekse diğerlerinin önemsemez direkt yakınlığı seçer
     if (sqrt(maxArea) >= 50 && alertRendering == 0) {
       setHandRightCoords();
+      zoomOutScale = 0.75;
       alertRendering = 1;
       isRender = true;
     }
 
-    if (yHand > 0.9 && alertRendering == 3 && tgCenterY != handCenterY) {
-      moveHandDown();
-    } else if (yHand < 0.1 && alertRendering == 2 && tgCenterY != handCenterY) {
+    if (alertRendering == 1) {
+      zoomOutEffect();
+    } else if (alertRendering == 2) {
       moveHandUp();
-    }
-
-    if (sqrt(maxArea) >= 50 &&
-        alertRendering == 1 &&
-        tgCenterX != handCenterX) {
-      moveHandRight();
+    } else if (alertRendering == 3) {
+      moveHandDown();
     }
   }
 
   void setHandUpCoords() {
-    handCenterX = AppParams.gameSize[0] * 0.6;
-    handCenterY = AppParams.gameSize[1] * 0.3;
+    handCenterX = AppParams.gameSize[0] * 0.5;
+    handCenterY = AppParams.gameSize[1] * 0.35;
   }
 
   void setHandDownCoords() {
-    handCenterX = AppParams.gameSize[0] * 0.6;
-    handCenterY = AppParams.gameSize[1] * 0.2;
+    handCenterX = AppParams.gameSize[0] * 0.5;
+    handCenterY = AppParams.gameSize[1] * 0.15;
   }
 
   void setHandRightCoords() {
@@ -100,7 +97,7 @@ class AlertsRender {
   }
 
   void moveHandUp() {
-    tgStepSize = AppParams.gameSize[1] * 0.001;
+    tgStepSize = AppParams.gameSize[1] * 0.0025;
     if ((handCenterY - tgCenterY).abs() <= tgStepSize) {
       handCenterY = tgCenterY;
       alertRendering = 0;
@@ -111,34 +108,30 @@ class AlertsRender {
   }
 
   void moveHandDown() {
-    tgStepSize = AppParams.gameSize[1] * 0.001;
+    tgStepSize = AppParams.gameSize[1] * 0.0025;
 
     if ((handCenterY - tgCenterY).abs() <= tgStepSize) {
       handCenterY = tgCenterY;
       alertRendering = 0;
+
       yHand = 0.5;
     } else {
       handCenterY = handCenterY + tgStepSize;
     }
   }
 
-  void moveHandRight() {
-    tgStepSize = AppParams.gameSize[0] * 0.001;
-    if ((handCenterX - tgCenterX).abs() < tgStepSize) {
-      handCenterX = tgCenterX;
+  void zoomOutEffect() {
+    zoomOutScale = zoomOutScale + 0.025;
+    if (zoomOutScale >= 1.5) {
       alertRendering = 0;
       maxArea = 0;
-    } else {
-      handCenterX = handCenterX + tgStepSize;
     }
   }
 
   void render(Canvas canvas) {
     if (isRender == true) {
-      renderBackground(canvas);
-      renderText(canvas);
-      renderPhone(canvas);
-
+      //renderBackground(canvas);
+      //renderText(canvas);
       renderHand(canvas);
     }
   }
@@ -181,20 +174,14 @@ class AlertsRender {
     textPainter.paint(canvas, textOffset);
   }
 
-  void renderPhone(Canvas canvas) {
-    final double render_x = AppParams.gameSize[0] * 0.25;
-    final double render_y = AppParams.gameSize[1] * 0.25;
-    final Rect phone_rect = Rect.fromLTWH(render_x, render_y,
-        AppParams.gameSize[0] * 0.3, AppParams.gameSize[1] * 0.15);
-    rearCamSprite.renderRect(canvas, phone_rect);
-  }
-
   void renderHand(Canvas canvas) {
     if (xHand != null && yHand != null) {
       final double render_x = handCenterX;
       final double render_y = handCenterY;
-      final Rect hand_rect = Rect.fromLTWH(render_x, render_y,
-          AppParams.gameSize[0] * 0.2, AppParams.gameSize[1] * 0.09);
+      final double width = AppParams.gameSize[0] * 0.3 * zoomOutScale;
+      final double height = AppParams.gameSize[1] * 0.15 * zoomOutScale;
+      final Rect hand_rect = Rect.fromLTWH(
+          render_x - width * 0.5, render_y - height * 0.5, width, height);
       handSprite.renderRect(canvas, hand_rect);
     }
   }

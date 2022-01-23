@@ -35,10 +35,10 @@ class HandDetection {
 
   HandDetection() {
     interpreterAddress = AppParams.interpreterAddress;
-    cameraHelper = CameraHelper();
   }
 
   void initialization() async {
+    cameraHelper = CameraHelper();
     await isolateUtils.start();
     await startLoop();
   }
@@ -141,7 +141,9 @@ class HandDetection {
       }
     }
 
+    //AppParams.isHandOnImage = false;
     if (x_weighted != 0 && total_weight != 0) {
+      //AppParams.isHandOnImage = true;
       if (isFrontCam == true) {
         x_hand = x_weighted / total_weight;
         x_hand = (((x_hand - 0.35) / (0.3)));
@@ -170,7 +172,6 @@ class HandDetection {
 
   void decode_boxes(List<List<List<dynamic>>> raw_boxes,
       List<List<List<dynamic>>> classificator) {
-    //Her bir output box için loop atar.
     for (var i = 0; i < HDetConst.options_num_boxes; i++) {
       if (classificator[0][i][0] < HDetConst.detection_threshold) {
         box_areas.add(0);

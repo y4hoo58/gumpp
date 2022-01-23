@@ -5,6 +5,8 @@ class DesignParams {
 
   static Color menuButCol = Colors.yellow.shade100;
 
+  static Color pauseCol = Colors.yellow.shade100;
+
   static void setRetryButCol(bool isDown) {
     if (isDown) {
       retryButCol = Colors.white;
@@ -18,6 +20,14 @@ class DesignParams {
       menuButCol = Colors.white;
     } else {
       menuButCol = Colors.yellow.shade100;
+    }
+  }
+
+  static void setPauseCol(bool isDown) {
+    if (isDown) {
+      pauseCol = Colors.white;
+    } else {
+      pauseCol = Colors.yellow.shade100;
     }
   }
 }

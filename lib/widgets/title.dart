@@ -68,7 +68,7 @@ class TitleState extends State<TitleWidget> {
   @override
   Widget build(BuildContext context) {
     return Text(
-      "GUMP",
+      "TUMP",
       style: GoogleFonts.megrim(
         color: titleColor,
         fontWeight: FontWeight.w900,

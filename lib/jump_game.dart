@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 
+import 'package:permission_handler/permission_handler.dart';
+
 import 'package:gumpp/app_params.dart';
 import 'package:gumpp/helpers/shared_preferences_helper.dart';
 import 'package:gumpp/game/unvisible/game_engine.dart';
@@ -20,6 +22,8 @@ class JumpGame extends FlameGame with TapDetector {
   AlertsRender alertsRender;
   double initialWait = 2;
 
+  //bool lateInit = false;
+
   Function onLose = () {};
 
   JumpGame() {
@@ -29,17 +33,44 @@ class JumpGame extends FlameGame with TapDetector {
   void initGame() async {
     await Future.delayed(const Duration(milliseconds: 50));
     handDetection = HandDetection();
+    var status = await Permission.camera.status;
+    if (status.isGranted || status.isLimited || status.isRestricted) {
+      await handDetection.initialization();
+    } else {
+      var askedStatus = await Permission.camera.request();
+      if (askedStatus.isGranted ||
+          askedStatus.isLimited ||
+          askedStatus.isRestricted) {
+        await handDetection.initialization();
+      }
+      // else {
+      //   await openAppSettings();
+
+      //   lateInit = true;
+      // }
+    }
+
     await Future.delayed(const Duration(milliseconds: 250));
-    await handDetection.initialization();
-    await Future.delayed(const Duration(milliseconds: 250));
+
     gameEngine = GameEngine();
     AppParams.gameState = -1;
     intAd = IntAdWidg();
     alertsRender = AlertsRender();
   }
 
+  // void lateStart() async {
+  //   if (lateInit) {
+  //     var status = await Permission.camera.status;
+  //     if (status.isGranted || status.isLimited || status.isRestricted) {
+  //       await handDetection.initialization();
+  //       lateInit = false;
+  //     }
+  //   }
+  // }
+
   @override
   void update(double t) {
+    //lateStart();
     switch (AppParams.gameState) {
       case -3:
         finishGame();
@@ -75,7 +106,7 @@ class JumpGame extends FlameGame with TapDetector {
       initialWait = initialWait - t;
       return AppParams.gameState;
     } else {
-      if (AppParams.isTutorial == true) {
+      if (AppParams.isTutorial == true || AppParams.isTraining == true) {
         alertsRender.renderAlert(
           handDetection.x_hand,
           handDetection.y_hand,
@@ -90,7 +121,7 @@ class JumpGame extends FlameGame with TapDetector {
       );
 
       if (AppParams.totalScore > AppParams.bestScore) {
-        if (AppParams.isTutorial == false) {
+        if (AppParams.isTutorial == false && AppParams.isTraining == false) {
           AppParams.bestScore = AppParams.totalScore;
         }
       }
@@ -117,7 +148,7 @@ class JumpGame extends FlameGame with TapDetector {
   }
 
   void setBestScore() async {
-    if (AppParams.isTutorial == false) {
+    if (AppParams.isTutorial == false && AppParams.isTraining == false) {
       SharedPreferencesHelper.setBestScore(AppParams.bestScore);
     }
   }

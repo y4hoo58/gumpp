@@ -42,9 +42,14 @@ class GameRender {
     myCharacter.render(canvas, y_hand, prediction_box_area);
 
     //Best score'u renderlar.
-    if (AppParams.isTutorial == false) {
+    if (AppParams.isTutorial == false && AppParams.isTraining == false) {
       render_best(canvas);
     }
+
+    //TODO: implementasyonu tamamla
+    // if (AppParams.gameState == 0) {
+    //   render_pause_button(canvas);
+    // }
 
     //Eğer tap screen renderlanması gerekiyorsa, oyun ekranının üzerine tap screen'i
     //renderlar. Eğer oyun bittiyse aynı şeyi finish screen için gerçekleştirir.
@@ -83,6 +88,35 @@ class GameRender {
     render_best(canvas);
     render_retry_button(canvas);
     render_menu_button(canvas);
+  }
+
+  void render_pause_button(Canvas canvas) {
+    final renderX = 0.0;
+    final renderY = AppParams.gameSize[1] * 0.9;
+    final width = AppParams.gameSize[0] * 0.1;
+    final height = AppParams.gameSize[1] * 0.1;
+    final bgRect = Rect.fromLTWH(
+      renderX,
+      renderY,
+      width,
+      height,
+    );
+
+    final bgPaint = Paint();
+    bgPaint.color = DesignParams.pauseCol;
+
+    final p1 = Offset(renderX + (width * 0.3), renderY + height * 0.15);
+    final p2 = Offset(renderX + width * 0.3, renderY + height * 0.85);
+    final paint = Paint()
+      ..color = Colors.black
+      ..strokeWidth = 7;
+
+    final p3 = Offset(renderX + (width * 0.7), renderY + height * 0.15);
+    final p4 = Offset(renderX + width * 0.7, renderY + height * 0.85);
+
+    canvas.drawRect(bgRect, bgPaint);
+    canvas.drawLine(p1, p2, paint);
+    canvas.drawLine(p3, p4, paint);
   }
 
   //Render the background when the game finished.
