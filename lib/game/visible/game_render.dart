@@ -63,7 +63,7 @@ class GameRender {
   }
 
   //Render background
-  void drawBackground(canvas) {
+  void drawBackground(Canvas canvas) {
     final bgRect = Rect.fromLTWH(
       0,
       0,
@@ -72,11 +72,8 @@ class GameRender {
     );
     final bgPaint = Paint();
 
-    if (AppParams.currentGameMode == -1) {
-      bgPaint.color = Colors.redAccent.shade100;
-    } else {
-      bgPaint.color = Colors.black;
-    }
+    bgPaint.color = Colors.transparent;
+
     canvas.drawRect(bgRect, bgPaint);
   }
 

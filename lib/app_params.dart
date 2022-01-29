@@ -1,62 +1,81 @@
-import 'package:gumpp/jump_game.dart';
-
 class AppParams {
-  // Tflite modelinin hafızada ki adresini tutar.
-  // Uygulama açıldığı anda interpreter hafızaya yüklenir.
-  // Daha sonra adresi buraya kaydedilir.
-  // Sadece HandDetection classından bu adrese erişilir.
+  /*
+    Uygulama başlatıldığı zaman tflite modelinin hafızadaki yeri bu değişkene atanır.
+   */
   static int interpreterAddress;
 
-  // Dialogbox ekranında kullanıcının bastığı butona bağlı olarak belirlenir.
-  // difficultyLevel -> 1,2 ve 3 değerlerini alabilir.
-  static int difficultyLevel;
-
-  // Uygulamanın hangi kamerayı kullandığını saklar.
-  // Birçok class'ın bu parametreye erişimi var.
+  /*
+    Hangi kameranın kullanılacağını tutar.
+    Bir çok class'ın bu parametereye erişimi var.
+  */
   static bool isFrontCam;
 
-  //Ekran boyutunu tutar.
-  //[width,height]
+  /*
+    Ekran boyutlarını tutar. 
+    [width,height]
+    HomeScreen State'i her build attığı zaman bu değer güncellenir.
+    Başka bir bu değişkene erişim yok.
+  */
   static List<double> gameSize;
 
-  //gameState:
-  //-4  : Finishgame çalıştırıldı
-  //-3  : Menuye dönüldü
-  //-2  : Retry atıldı
-  //-1  : Bekleme ekranında bekliyor
-  // 0  : Oyun devam ediyor
-  // 1  : Player Öldü
-  // 2  : Kamera bekleniyor
+  /* 
+    gameState:
+    -999 : garbage data
+    -4 : finishgame fonksiyonu çalıştırıldı
+    -3 : menüye dönüldü
+    -2 : retry atıldı
+    -1 : bekleme ekranında bekleniyor
+     0 : oyun oynanıyor
+     1 : player öldü
+     2 : kamera bekleniyor
+  */
   static int gameState = -999;
 
-  //-1 : Reverse
-  // 0 : No mode
-  static int currentGameMode;
-
-  static bool isPlayer1Selected;
-
+  /*
+    Bu değere null atanamasa da default olarak 0 başlatmak daha iyi olur.
+  */
   static int bestScore = 0;
 
+  /*
+    Anlık score'u tutar.
+    Bu değer bestScore'u aşarsa kaydedilir.
+  */
   static int totalScore = 0;
 
+  /* 
+    Tutorial ekranının gösterilip gösterilmemesi bu bool değere bağlıdır.
+    isTutorial değişkeni tutorial süresi bittiği zaman otomatik olarak
+    false olarak değiştirilir ve tutorial modundan çıkış yapılmış olur.
+  */
   static bool isTutorial = false;
+
+  /* 
+    Training ekranına geçilip geçilmediğini tutar.
+    isTutorial'dan farkı, isTutorial oyun ilk açıldığı zaman default olarak true
+    yapılır. isTraining ise kullanıcı kararına bağlı olarak true olabilir.
+    isTutorial değişkeni tutorial süresi bittiği zaman otomatik olarak false'a döner 
+    ve tutorial modu devre dışı kalır. Ancak isTraining asla otomatik olarak false'a dönemez.
+    Bu değişkenin isTutorial'dan farkı bundan ibarettir.
+  */
   static bool isTraining = false;
 
+  /* 
+    Flashın açık olup olmadığını tutar.
+  */
   static bool isFlashOn = false;
-  //Herhangi bir bug'a sebep olmasın ve çok mühim olmadığı için şimdilik
-  //true başlatmak sıkıntı olmaz.
-  //static bool isHandOnImage = true;
 
-  //static bool showAd = false;
-
-  //TODO : Sharedpreferences eklenecek
+  /* 
+    Kullanıcının voicePref ayarını tutar.
+    Oyun başlarken bu değer kayıtlardan okunur ve değiştirilir.
+    Yine de default olarka true kalması daha iyi.
+  */
   static bool voicePref = true;
 
   /*
-   * flashMode:
-   * -1 : off
-   * 0  : auto
-   * 1  : on
-   */
+    flashMode:
+     -1 : off
+     0  : auto
+     1  : on
+  */
   static int flashMode = 1;
 }

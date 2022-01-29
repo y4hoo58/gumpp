@@ -22,17 +22,22 @@ class JumpGame extends FlameGame with TapDetector {
   AlertsRender alertsRender;
   double initialWait = 2;
 
-  //bool lateInit = false;
-
   Function onLose = () {};
 
   JumpGame() {
     initGame();
   }
 
+  /*
+    Oyun için gerekli classları başlatır.
+    Eğer kamera izinleri alındıysa handDetection mekanizmasını direkt başlatır.
+    Eğer izinler alınmadıysa kamera izinlerini sorar, izin verilirse handDetection
+    mekanizmasını başlatır. Eğer izin almaz ise başlatmaz.
+  */
   void initGame() async {
-    await Future.delayed(const Duration(milliseconds: 50));
+    await Future.delayed(const Duration(milliseconds: 200));
     handDetection = HandDetection();
+
     var status = await Permission.camera.status;
     if (status.isGranted || status.isLimited || status.isRestricted) {
       await handDetection.initialization();
@@ -43,14 +48,9 @@ class JumpGame extends FlameGame with TapDetector {
           askedStatus.isRestricted) {
         await handDetection.initialization();
       }
-      // else {
-      //   await openAppSettings();
-
-      //   lateInit = true;
-      // }
     }
 
-    await Future.delayed(const Duration(milliseconds: 250));
+    await Future.delayed(const Duration(milliseconds: 100));
 
     gameEngine = GameEngine();
     AppParams.gameState = -1;
@@ -58,42 +58,55 @@ class JumpGame extends FlameGame with TapDetector {
     alertsRender = AlertsRender();
   }
 
-  // void lateStart() async {
-  //   if (lateInit) {
-  //     var status = await Permission.camera.status;
-  //     if (status.isGranted || status.isLimited || status.isRestricted) {
-  //       await handDetection.initialization();
-  //       lateInit = false;
-  //     }
-  //   }
-  // }
-
   @override
   void update(double t) {
-    //lateStart();
     switch (AppParams.gameState) {
+      case -4:
+        /* 
+        Hiç bir şey yapma, finishGame çalıştırıldı ve menüye dönülüyor.
+        */
+        break;
       case -3:
+        /*
+        finishGame çalıştırıldıktan sonra gamestate'in -4 olarak değiştirilmemesi
+        update fonksiyonunun her devamlı olarak loop atması ve finishGame'i defalarca çağırmaya çalışmasıdır.
+        finishGame tek bir sefer çalıştırılması gerekiyor.
+        */
         finishGame();
         AppParams.gameState = -4;
-
         break;
       case -2:
-        handDetection.startLoop();
+        /* 
+          Retry tuşuna basıldı.
+          Gerekli tüm parametereleri sıfırlayıp oyunu tekrardan başlat.
+          Prediction loop tekrar çalıştır.
+          Imagestream zaten durdurulmayacağı için tekrardan çalıştırılmayacak.
+        */
         resetGame();
         AppParams.gameState = 0;
-        alertsRender = AlertsRender();
         break;
       case -1:
+        /* 
+          Oyun bekleme ekranında hiç bir şey yapmaya gerek yok.
+          todo : Score'u sıfırlamaya gerek olmayabilir. Silinmeli mi daha sonra kontrol et. 
+          Şimdilik zararı yok burada.
+        */
         AppParams.totalScore = 0;
         break;
       case 0:
         AppParams.gameState = playGame(t);
         break;
       case 1:
+        /* 
+          Karakter öldü. 
+          Eğer reklam hazırsa reklamı göster.
+          alersRender instance'ı sil. Yoksa retry ekranında da 
+          alertleri göstermeye devam eder.
+        */
         if (intAd.interstitialAd != null) {
           intAd.interstitialAd.show();
         }
-        handDetection.stopLoop();
+
         alertsRender = null;
         break;
       case 2:
@@ -154,16 +167,13 @@ class JumpGame extends FlameGame with TapDetector {
   }
 
   void resetGame() {
-    handDetection.startLoop();
     gameEngine = GameEngine();
+    alertsRender = AlertsRender();
     initialWait = 1;
   }
 
   void finishGame() async {
     gameEngine = null;
-    //TODO: Dispose yapmak mı yoksa doğrudan null yapmak mı daha iyi? Direkt null
-    //yapınca crash yaşanıyor mu kamerada?
-    //handDetection = null;
     handDetection.disposeDetectionLoop();
     handDetection = null;
     await Future.delayed(const Duration(milliseconds: 100));

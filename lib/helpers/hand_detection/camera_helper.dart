@@ -7,7 +7,7 @@ import 'package:torch_light/torch_light.dart';
 import 'package:gumpp/app_params.dart';
 
 class CameraHelper {
-  CameraController cameraController;
+  static CameraController cameraController;
   List<CameraDescription> cameras;
 
   bool isFrontCam = AppParams.isFrontCam;
@@ -19,16 +19,15 @@ class CameraHelper {
   double pixelAverage = 0;
 
   final buffer = Float32List.view(Float32List(1 * 128 * 128 * 3).buffer);
-
   CameraHelper() {
-    initCamHelper();
+    cameraController = null;
   }
 
-  void initCamHelper() async {
+  Future<void> initCamHelper() async {
     await initCam();
   }
 
-  void initCam() async {
+  Future<void> initCam() async {
     cameras = await availableCameras();
 
     List<int> cam_indexes = [];
@@ -70,13 +69,23 @@ class CameraHelper {
   //TODO:
   // 1-) Fonksiyonun içerisinde gerçekleştirilen işlemlerin sırası ayarlanacak.
   // 2-) Debugging de bir sıkıntılar dan bahsediyor ama ??
-  void startStream() async {
+  Future<void> startStream() async {
     if (isStreaming == false || isStreaming == null) {
       isStreaming = true;
 
-      await cameraController.initialize().then((_) async {
-        await cameraController.startImageStream(onLatestImageAvailable);
-      });
+      while (1 > 0) {
+        if (cameraController != null) {
+          try {
+            await cameraController.initialize().then((_) async {
+              await cameraController.startImageStream(onLatestImageAvailable);
+            });
+
+            break;
+          } on Exception {}
+        } else {
+          await Future.delayed(Duration(milliseconds: 1));
+        }
+      }
 
       try {
         cameraController.setZoomLevel(await cameraController.getMinZoomLevel());
@@ -97,24 +106,12 @@ class CameraHelper {
     }
   }
 
-  void stopStream() async {
-    if (isStreaming == true) {
-      if (isFrontCam == false) {
-        try {
-          await TorchLight.disableTorch();
-          AppParams.isFlashOn = false;
-        } on Exception catch (_) {}
-      }
-      await cameraController.stopImageStream();
-      isStreaming = false;
-    }
-  }
-
-  void disposeCam() async {
+  Future<void> disposeCam() async {
     if (isCamContWorking == true) {
       isCamContWorking = false;
 
       await cameraController.dispose();
+      cameraController = null;
 
       if (isFrontCam == false) {
         try {
@@ -155,6 +152,7 @@ class CameraHelper {
         buffer[49151 - buffer_index++] = 2 * (b / 255) - 1;
         buffer[49151 - buffer_index++] = 2 * (g / 255) - 1;
         buffer[49151 - buffer_index++] = 2 * (r / 255) - 1;
+
         h++;
       }
       while (h < 232) {
@@ -202,7 +200,7 @@ class CameraHelper {
 
       w = w - 3;
     }
-    await Future.delayed(Duration(microseconds: 100));
+    await Future.delayed(const Duration(microseconds: 100));
     while (w > 96) {
       double h = 0;
       while (h < 8) {
@@ -270,7 +268,7 @@ class CameraHelper {
       }
       w = w - 2;
     }
-    await Future.delayed(Duration(microseconds: 100));
+    await Future.delayed(const Duration(microseconds: 100));
     while (w > 0) {
       double h = 0;
       while (h < 8) {
@@ -339,7 +337,8 @@ class CameraHelper {
       w = w - 3;
     }
     pixelAverage = pixelTotal / (128 * 128 * 3);
-    await Future.delayed(Duration(microseconds: 100));
+    await Future.delayed(const Duration(microseconds: 100));
+
     isNewBuffer = true;
   }
 }

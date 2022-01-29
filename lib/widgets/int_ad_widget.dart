@@ -25,7 +25,7 @@ class IntAdWidg {
           isInterstitialAdReady = true;
         },
         onAdFailedToLoad: (err) {
-          print('Failed to load an interstitial ad: ${err.message}');
+          //print('Failed to load an interstitial ad: ${err.message}');
           isInterstitialAdReady = false;
         },
       ),

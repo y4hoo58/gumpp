@@ -178,7 +178,7 @@ class AlertsRender {
     if (xHand != null && yHand != null) {
       final double render_x = handCenterX;
       final double render_y = handCenterY;
-      final double width = AppParams.gameSize[0] * 0.3 * zoomOutScale;
+      final double width = AppParams.gameSize[0] * 0.3 * zoomOutScale * 0.7;
       final double height = AppParams.gameSize[1] * 0.15 * zoomOutScale;
       final Rect hand_rect = Rect.fromLTWH(
           render_x - width * 0.5, render_y - height * 0.5, width, height);

@@ -2,35 +2,28 @@
 
 import 'package:flutter/material.dart';
 
-import 'package:flame/flame.dart';
-
-import 'package:google_mobile_ads/google_mobile_ads.dart';
-
-import 'package:tflite_flutter/tflite_flutter.dart';
-
-import 'package:is_first_run/is_first_run.dart';
-
 import 'package:torch_light/torch_light.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 
 import 'package:gumpp/app_params.dart';
-import 'package:gumpp/helpers/shared_preferences_helper.dart';
 
 import 'package:gumpp/widgets/buttons/play_button.dart';
 import 'package:gumpp/widgets/buttons/settings_button.dart';
 import 'package:gumpp/widgets/buttons/tutorial_button.dart';
-
 import 'package:gumpp/widgets/title.dart';
 import 'package:gumpp/widgets/menu_painter.dart';
 
-int bestScore = 0;
+import 'package:gumpp/app_initialization.dart';
 
-//Main function
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp();
+
+  final AppInitialization _appInitialization = AppInitialization();
+  _appInitialization.initGame();
+
   runApp(MyApp());
 }
 
@@ -40,109 +33,53 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: HomeScreen(),
-      //showPerformanceOverlay: true,
     );
   }
 }
 
-//Homescreen statefulwidget
 class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-//Homescreen state
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
-  @override
-  void initState() {
-    init();
-    load_model();
-    _initGoogleMobileAds();
-    load_bestScore();
-    load_voicePref();
-    load_flashMode();
-    checkIfTutorial();
-    checkIfFlashOn();
-    super.initState();
-  }
-
   void checkIfFlashOn() async {
-    if (AppParams.isFlashOn) {
-      try {
-        await TorchLight.disableTorch();
-      } on Exception catch (_) {}
-    }
+    /*
+    State her build attığında çalışır.
+    Ana ekranda hiç bir şekilde flash yanmasını istemediğim için
+    herhangi bir condition eklemedim.
+    Zaten bu state pek fazla çağrılmadığı için pek sıkıntı olmaz.
+   */
+    try {
+      await TorchLight.disableTorch();
+    } on Exception catch (_) {}
   }
 
-  void init() async {
-    WidgetsFlutterBinding.ensureInitialized();
-    await Flame.device.fullScreen();
-    await Flame.device.setPortraitUpOnly();
-  }
-
-  void load_model() async {
-    Interpreter _interpreter;
-    var interpreterOptions = InterpreterOptions()..useNnApiForAndroid = true;
-
-    _interpreter = await Interpreter.fromAsset('palm_detection.tflite',
-        options: interpreterOptions);
-    _interpreter.allocateTensors();
-
-    AppParams.interpreterAddress = _interpreter.address;
-  }
-
-  Future<InitializationStatus> _initGoogleMobileAds() {
-    // TODO: Initialize Google Mobile Ads SDK
-    return MobileAds.instance.initialize();
-  }
-
-  void load_bestScore() async {
-    bestScore = await SharedPreferencesHelper.getBestScore();
-
-    //Eğer daha önceden bestscore kaydedilmediyse null döndürüyor.
-    if (bestScore == null) {
-      set_bestScore(0);
-    }
-
-    AppParams.bestScore = bestScore;
-  }
-
-  void load_flashMode() async {
-    int flashMode = await SharedPreferencesHelper.getFlashMode();
-    AppParams.flashMode = flashMode;
-  }
-
-  void load_voicePref() async {
-    final bool _voicePref = await SharedPreferencesHelper.getVoicePref();
-    AppParams.voicePref = _voicePref;
-  }
-
-  void checkIfTutorial() async {
-    AppParams.isTutorial ??= await IsFirstRun.isFirstRun();
-  }
-
-  void set_bestScore(int best_score) async {
-    SharedPreferencesHelper.setBestScore(best_score);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    checkIfFlashOn();
+  void setScreenSize(final BuildContext context) {
+    /*
+      Ekran boyutlarını AppParams classına taşır.
+      Widget her build attığında çalışır.
+    */
     AppParams.gameSize = [
       MediaQuery.of(context).size.width,
       MediaQuery.of(context).size.height,
     ];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    /*
+      Alttaki iki fonksiyonu gözden kaçırma.
+     */
+    checkIfFlashOn();
+    setScreenSize(context);
+
     return Material(
-      animationDuration: Duration(milliseconds: 0),
+      animationDuration: const Duration(milliseconds: 0),
       color: Colors.black,
       child: Stack(children: <Widget>[
         MenuPainterr(),
-        Container(
+        SizedBox(
           width: double.infinity,
           height: double.infinity,
           child: Column(

@@ -41,6 +41,5 @@ class RemoteConfigService {
       minimumFetchInterval: Duration.zero,
     ));
     await _remoteConfig.fetchAndActivate();
-    print(getFrontCamButName);
   }
 }

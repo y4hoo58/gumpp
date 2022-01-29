@@ -86,7 +86,7 @@ class PhysicsEngine {
             //Not: y2_orta >= y_upper_line koymayınca dik indiği zaman bug olup devamlı loop'a sarıyor
             //TODO: Burada normalde *2 yapmamız lazım sekmesi için
             //ancak sekmek yerine bir frame'i temasta göstermek daha sağlıklı
-            y_correction = (y_upper_line - (y2_orta));
+            y_correction = (y_upper_line - (y2_orta)) * 2;
           }
         }
       }

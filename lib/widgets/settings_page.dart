@@ -85,7 +85,7 @@ class SettingsPageState extends State<SettingsPage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
                 Text(
-                  "FLASH",
+                  "FLASH ",
                   style: TextStyle(
                     //TODO: Fontsize parametrelereştirilecek
                     fontSize: 30,

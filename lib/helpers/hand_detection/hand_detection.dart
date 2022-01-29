@@ -14,9 +14,7 @@ import 'package:gumpp/app_params.dart';
 
 class HandDetection {
   IsolateUtils isolateUtils = IsolateUtils();
-  CameraHelper cameraHelper;
-
-  int interpreterAddress;
+  CameraHelper cameraHelper = CameraHelper();
 
   List<double> box_areas = [];
 
@@ -30,63 +28,67 @@ class HandDetection {
   double prediction_count = 0;
   double max_area = 1;
 
-  bool isLoop;
-  bool isFrontCam = AppParams.isFrontCam;
-
-  HandDetection() {
-    interpreterAddress = AppParams.interpreterAddress;
-  }
-
-  void initialization() async {
-    cameraHelper = CameraHelper();
+  Future<void> initialization() async {
+    await cameraHelper.initCamHelper();
     await isolateUtils.start();
-    await startLoop();
+    await startCamStream();
+    mainLoop();
   }
 
-  void startLoop() async {
-    if (isLoop == null || isLoop == false) {
-      isLoop = true;
-      if (cameraHelper.cameraController != null) {
+  /* 
+    cameraController null olduğu süre boyunca devamlı döngü atar.
+    null olmayı bırakıp bir değer aldığı zaman stream'i başlatır ve döngüden çıkar.
+  */
+  Future<void> startCamStream() async {
+    while (1 > 0) {
+      if (CameraHelper.cameraController != null) {
         await cameraHelper.startStream();
-      }
-      mainLoop();
-    }
-  }
 
-  void stopLoop() async {
-    if (isLoop) {
-      isLoop = false;
-      await cameraHelper.stopStream();
-    }
-  }
-
-  void mainLoop() async {
-    while (isLoop) {
-      if (cameraHelper.isNewBuffer == true) {
-//        Stopwatch predictWatch = new Stopwatch()..start();
-
-        cameraHelper.isNewBuffer = false;
-        if (AppParams.gameState == 0) {
-          await predict(cameraHelper.buffer);
-        }
-
-//        await Future.delayed(Duration(milliseconds: 10));
-
-//        int pwatch = predictWatch.elapsed.inMicroseconds;
+        break;
       } else {
-        await Future.delayed(Duration(milliseconds: 1));
+        Future.delayed(const Duration(milliseconds: 1));
       }
     }
   }
 
-  void disposeDetectionLoop() async {
+  /* 
+    Bir kere çalıştırıldıktan sonra bir daha durmaz.
+    Eğer gamestate 0 ise oyun oynanıyodur ve bu loop sürekli döner.
+    Eğer gamestate 0 değilse bekleme moduna alır ve her 100ms de bir 
+    döngü döner. 
+    Asla durmaz!!
+  */
+  void mainLoop() async {
+    while (1 > 0) {
+      if (AppParams.gameState == 0) {
+        if (cameraHelper.isNewBuffer) {
+          cameraHelper.isNewBuffer = false;
+          await predict(cameraHelper.buffer);
+        } else {
+          await Future.delayed(const Duration(milliseconds: 1));
+        }
+      } else {
+        await Future.delayed(const Duration(milliseconds: 100));
+      }
+    }
+  }
+
+  /* 
+    isolate'i durdur.
+    Kamerayı kapat.
+    Daha sonra cameraHelper'ı null yap.
+    cameraController'ı static olduğu için null yap. camerahelper'ı silince
+    null a dönmüyor çünkü.
+  */
+  Future<void> disposeDetectionLoop() async {
     isolateUtils.stop();
     await cameraHelper.disposeCam();
-    cameraHelper = null;
+    //CameraHelper.cameraController = null;
+    //cameraHelper = null;
   }
 
-  void predict(var buffer) async {
-    final isolateData = IsolateData(buffer, interpreterAddress);
+  Future<void> predict(var buffer) async {
+    final isolateData = IsolateData(buffer, AppParams.interpreterAddress);
 
     Map<int, dynamic> outputs = await inference(isolateData);
 
@@ -144,7 +146,7 @@ class HandDetection {
     //AppParams.isHandOnImage = false;
     if (x_weighted != 0 && total_weight != 0) {
       //AppParams.isHandOnImage = true;
-      if (isFrontCam == true) {
+      if (AppParams.isFrontCam == true) {
         x_hand = x_weighted / total_weight;
         x_hand = (((x_hand - 0.35) / (0.3)));
         x_hand = x_hand * 0.5;
@@ -154,7 +156,7 @@ class HandDetection {
 
         p_weight = total_weight / prediction_count;
         this.max_area = max_area * 128 * 128;
-      } else if (isFrontCam == false) {
+      } else if (AppParams.isFrontCam == false) {
         x_hand = x_weighted / total_weight;
         x_hand = (((x_hand - 0.35) / (0.3)));
 

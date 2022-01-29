@@ -6,6 +6,7 @@ import 'package:gumpp/widgets/game_widget.dart';
 import 'package:gumpp/widgets/ad_widget.dart';
 import 'package:gumpp/app_params.dart';
 import 'package:gumpp/remote_config_service.dart';
+import 'package:gumpp/widgets/camera_screen.dart';
 
 class GameModeBut extends StatefulWidget {
   final bool isFrontCam;
@@ -94,6 +95,7 @@ class GameModeButState extends State<GameModeBut> {
           return Stack(
             children: <Widget>[
               MyGameWidget(),
+              CameraScreen(),
               AddWidg(),
             ],
           );
