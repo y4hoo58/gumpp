@@ -28,6 +28,7 @@ class AppParams {
      0 : oyun oynanıyor
      1 : player öldü
      2 : kamera bekleniyor
+     3 : pause screen
   */
   static int gameState = -999;
 

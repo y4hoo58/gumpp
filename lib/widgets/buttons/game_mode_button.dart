@@ -27,7 +27,7 @@ class GameModeButState extends State<GameModeBut> {
 
   RemoteConfigService _remoteConfigService;
 
-  Color buttonColor = Colors.yellow.shade100;
+  final Color buttonColor = Colors.yellow.shade100;
   String assetName;
   GameModeButState(
     this.isFrontCam,
@@ -48,37 +48,6 @@ class GameModeButState extends State<GameModeBut> {
       assetName = "assets/images/back_cam_img1.png";
     }
     super.initState();
-
-    //changeColor();
-  }
-
-  void changeColor() async {
-    var rng = Random();
-    while (true) {
-      if (rng.nextBool()) {
-        buttonColor = Colors.cyan.shade100;
-      } else {
-        buttonColor = Colors.yellow.shade100;
-      }
-      // int randColor = rng.nextInt(4);
-      // switch (randColor) {
-      //   case 0:
-      //     buttonColor = Colors.cyanAccent;
-      //     break;
-      //   case 1:
-      //     buttonColor = Colors.greenAccent.shade200;
-      //     break;
-      //   case 2:
-      //     buttonColor = Colors.yellow.shade100;
-      //     break;
-      //   case 3:
-      //     buttonColor = Colors.pink.shade200;
-      //     break;
-      // }
-
-      setState(() {});
-      await Future.delayed(const Duration(milliseconds: 250));
-    }
   }
 
   @override

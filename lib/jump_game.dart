@@ -24,6 +24,7 @@ class JumpGame extends FlameGame with TapDetector {
 
   Function onLose = () {};
 
+  bool _isAdShowing = false;
   JumpGame() {
     initGame();
   }
@@ -35,7 +36,7 @@ class JumpGame extends FlameGame with TapDetector {
     mekanizmasını başlatır. Eğer izin almaz ise başlatmaz.
   */
   void initGame() async {
-    await Future.delayed(const Duration(milliseconds: 200));
+    await Future.delayed(const Duration(milliseconds: 300));
     handDetection = HandDetection();
 
     var status = await Permission.camera.status;
@@ -103,13 +104,16 @@ class JumpGame extends FlameGame with TapDetector {
           alersRender instance'ı sil. Yoksa retry ekranında da 
           alertleri göstermeye devam eder.
         */
-        if (intAd.interstitialAd != null) {
+        if (intAd.interstitialAd != null && _isAdShowing == false) {
           intAd.interstitialAd.show();
+          _isAdShowing = true;
         }
 
         alertsRender = null;
         break;
       case 2:
+        break;
+      case 3:
         break;
     }
   }
@@ -142,16 +146,13 @@ class JumpGame extends FlameGame with TapDetector {
       if (isCharDied) {
         if (!intAd.isInterstitialAdReady) {
           intAd.loadInterstitialAd();
+          _isAdShowing = false;
         }
         //Karakter her öldüğünde bestscore u kaydeder.
         //Total score la bestscore karşılaştırıp yapmama sebebi,
         //total score un zaten bestscore a eşit olması.
         //TODO:bool lu bir şey ayarla. Her defasında kaydetmesin.
         setBestScore();
-
-        if (AppParams.isTutorial = true) {
-          AppParams.isTutorial = false;
-        }
 
         return 1;
       } else {
@@ -194,8 +195,18 @@ class JumpGame extends FlameGame with TapDetector {
   @override
   bool onTapDown(TapDownInfo tapDown) {
     switch (AppParams.gameState) {
+      case 0:
+
       case 1:
-        final int _gameState = changeColor(tapDown);
+        final int _gameState = changeRetryColor(tapDown);
+        if (_gameState == -2) {
+          DesignParams.setRetryButCol(true);
+        } else if (_gameState == -3) {
+          DesignParams.setMenuButCol(true);
+        }
+        break;
+      case 3:
+        final int _gameState = changePauseColor(tapDown);
         if (_gameState == -2) {
           DesignParams.setRetryButCol(true);
         } else if (_gameState == -3) {
@@ -218,42 +229,94 @@ class JumpGame extends FlameGame with TapDetector {
       case -1:
         AppParams.gameState = 0;
         break;
+      case 0:
+        final _isPressed = isPausePressed(tapUp);
+        if (_isPressed) {
+          AppParams.gameState = 3;
+        }
+        break;
       case 1:
-        final int _gameState = compButtons(tapUp);
+        final int _gameState = compRetryButtons(tapUp);
 
+        DesignParams.setRetryButCol(false);
+        DesignParams.setMenuButCol(false);
+
+        AppParams.gameState = _gameState;
+
+        if (_gameState == -2) {
+          AppParams.totalScore = 0;
+        }
+
+        break;
+
+      case 3:
+        final int _gameState = compPauseButtons(tapUp);
         DesignParams.setRetryButCol(false);
         DesignParams.setMenuButCol(false);
         AppParams.gameState = _gameState;
         if (_gameState == -2) {
           AppParams.totalScore = 0;
         }
-
         break;
     }
     return true;
   }
 
-  int compButtons(TapUpInfo tapUp) {
+  bool isPausePressed(final TapUpInfo tapUp) {
     final double xTap = tapUp.eventPosition.global.x;
     final double yTap = tapUp.eventPosition.global.y;
 
-    //Eğer "retry" butonuna basılırsa gamestate'i oyuna retry atılacak şekilde güncelle.
-    //TODO : x sınır koşullarını da ekle
-    if (yTap > AppParams.gameSize[1] * 0.69 &&
-        yTap < AppParams.gameSize[1] * 0.765) {
-      if (xTap > AppParams.gameSize[0] * 0.25 &&
-          xTap < AppParams.gameSize[0] * 0.75) {
+    final double _height = AppParams.gameSize[1] * 0.05;
+
+    final double _width = _height * 0.5;
+
+    double _renderY;
+    if (AppParams.gameSize[1] * 0.1 > 50) {
+      _renderY = AppParams.gameSize[1] * 0.1;
+    } else {
+      _renderY = AppParams.gameSize[1] * 0.15;
+    }
+
+    final double _pauseLeft = AppParams.gameSize[0] * 0.1;
+    final double _pauseRight = AppParams.gameSize[0] * 0.1 + _width;
+    final double _pauseTop = _renderY;
+    final double _pauseBot = _renderY + _height;
+
+    if (yTap >= _pauseTop && yTap <= _pauseBot) {
+      if (xTap >= _pauseLeft && xTap <= _pauseRight) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  int compRetryButtons(TapUpInfo tapUp) {
+    final double xTap = tapUp.eventPosition.global.x;
+    final double yTap = tapUp.eventPosition.global.y;
+
+    final double _butHeight = AppParams.gameSize[1] * 0.1;
+    final double _butWidth = _butHeight * 2;
+
+    final double _retryLeft = AppParams.gameSize[0] * 0.5 - _butWidth * 0.5;
+    final double _retryRight = AppParams.gameSize[0] * 0.5 + _butWidth * 0.5;
+    final double _retryTop = AppParams.gameSize[1] * 0.65 - _butHeight * 0.5;
+    final double _retryBot = AppParams.gameSize[1] * 0.65 + _butHeight * 0.5;
+
+    if (yTap >= _retryTop && yTap <= _retryBot) {
+      if (xTap >= _retryLeft && xTap <= _retryRight) {
         return -2;
       } else {
         return AppParams.gameState;
       }
     }
-    //Eğer "menu" butonuna basılırsa gamestate'i oyunu sıfırlayacak şekilde güncelle.
-    //TODO : x sınır koşullarını da ekle
-    if (yTap > AppParams.gameSize[1] * 0.84 &&
-        yTap < AppParams.gameSize[1] * 0.915) {
-      if (xTap > AppParams.gameSize[0] * 0.25 &&
-          xTap < AppParams.gameSize[0] * 0.75) {
+
+    final double _menuLeft = AppParams.gameSize[0] * 0.5 - _butWidth * 0.5;
+    final double _menuRight = AppParams.gameSize[0] * 0.5 + _butWidth * 0.5;
+    final double _menuTop = AppParams.gameSize[1] * 0.8 - _butHeight * 0.5;
+    final double _menuBot = AppParams.gameSize[1] * 0.8 + _butHeight * 0.5;
+
+    if (yTap >= _menuTop && yTap <= _menuBot) {
+      if (xTap >= _menuLeft && xTap <= _menuRight) {
         return -3;
       } else {
         return AppParams.gameState;
@@ -263,29 +326,110 @@ class JumpGame extends FlameGame with TapDetector {
     return AppParams.gameState;
   }
 
-  int changeColor(TapDownInfo tapDown) {
+  int compPauseButtons(TapUpInfo tapUp) {
+    final double xTap = tapUp.eventPosition.global.x;
+    final double yTap = tapUp.eventPosition.global.y;
+
+    final double _butHeight = AppParams.gameSize[1] * 0.1;
+    final double _butWidth = _butHeight * 2;
+
+    final double _retryLeft = AppParams.gameSize[0] * 0.5 - _butWidth * 0.5;
+    final double _retryRight = AppParams.gameSize[0] * 0.5 + _butWidth * 0.5;
+    final double _retryTop = AppParams.gameSize[1] * 0.65 - _butHeight * 0.5;
+    final double _retryBot = AppParams.gameSize[1] * 0.65 + _butHeight * 0.5;
+
+    if (yTap >= _retryTop && yTap <= _retryBot) {
+      if (xTap >= _retryLeft && xTap <= _retryRight) {
+        return -2;
+      } else {
+        return AppParams.gameState;
+      }
+    }
+
+    final double _menuLeft = AppParams.gameSize[0] * 0.5 - _butWidth * 0.5;
+    final double _menuRight = AppParams.gameSize[0] * 0.5 + _butWidth * 0.5;
+    final double _menuTop = AppParams.gameSize[1] * 0.8 - _butHeight * 0.5;
+    final double _menuBot = AppParams.gameSize[1] * 0.8 + _butHeight * 0.5;
+
+    if (yTap >= _menuTop && yTap <= _menuBot) {
+      if (xTap >= _menuLeft && xTap <= _menuRight) {
+        return -3;
+      } else {
+        return AppParams.gameState;
+      }
+    }
+
+    return 0;
+  }
+
+  int changeRetryColor(TapDownInfo tapDown) {
     final double xTap = tapDown.eventPosition.global.x;
     final double yTap = tapDown.eventPosition.global.y;
 
-    //Eğer "retry" butonuna basılırsa gamestate'i oyuna retry atılacak şekilde güncelle.
-    //TODO : x sınır koşullarını da ekle
-    if (yTap > AppParams.gameSize[1] * 0.69 &&
-        yTap < AppParams.gameSize[1] * 0.765) {
-      if (xTap > AppParams.gameSize[0] * 0.25 &&
-          xTap < AppParams.gameSize[0] * 0.75) {
+    final double _butHeight = AppParams.gameSize[1] * 0.1;
+    final double _butWidth = _butHeight * 2;
+
+    final double _retryLeft = AppParams.gameSize[0] * 0.5 - _butWidth * 0.5;
+    final double _retryRight = AppParams.gameSize[0] * 0.5 + _butWidth * 0.5;
+    final double _retryTop = AppParams.gameSize[1] * 0.65 - _butHeight * 0.5;
+    final double _retryBot = AppParams.gameSize[1] * 0.65 + _butHeight * 0.5;
+
+    if (yTap >= _retryTop && yTap <= _retryBot) {
+      if (xTap >= _retryLeft && xTap <= _retryRight) {
         return -2;
-      }
-    }
-    //Eğer "menu" butonuna basılırsa gamestate'i oyunu sıfırlayacak şekilde güncelle.
-    //TODO : x sınır koşullarını da ekle
-    if (yTap > AppParams.gameSize[1] * 0.84 &&
-        yTap < AppParams.gameSize[1] * 0.915) {
-      if (xTap > AppParams.gameSize[0] * 0.25 &&
-          xTap < AppParams.gameSize[0] * 0.75) {
-        return -3;
+      } else {
+        return AppParams.gameState;
       }
     }
 
+    final double _menuLeft = AppParams.gameSize[0] * 0.5 - _butWidth * 0.5;
+    final double _menuRight = AppParams.gameSize[0] * 0.5 + _butWidth * 0.5;
+    final double _menuTop = AppParams.gameSize[1] * 0.8 - _butHeight * 0.5;
+    final double _menuBot = AppParams.gameSize[1] * 0.8 + _butHeight * 0.5;
+
+    if (yTap >= _menuTop && yTap <= _menuBot) {
+      if (xTap >= _menuLeft && xTap <= _menuRight) {
+        return -3;
+      } else {
+        return AppParams.gameState;
+      }
+    }
+
+    return AppParams.gameState;
+  }
+
+  int changePauseColor(TapDownInfo tapDown) {
+    final double xTap = tapDown.eventPosition.global.x;
+    final double yTap = tapDown.eventPosition.global.y;
+
+    final double _butHeight = AppParams.gameSize[1] * 0.1;
+    final double _butWidth = _butHeight * 2;
+
+    final double _retryLeft = AppParams.gameSize[0] * 0.5 - _butWidth * 0.5;
+    final double _retryRight = AppParams.gameSize[0] * 0.5 + _butWidth * 0.5;
+    final double _retryTop = AppParams.gameSize[1] * 0.65 - _butHeight * 0.5;
+    final double _retryBot = AppParams.gameSize[1] * 0.65 + _butHeight * 0.5;
+
+    if (yTap >= _retryTop && yTap <= _retryBot) {
+      if (xTap >= _retryLeft && xTap <= _retryRight) {
+        return -2;
+      } else {
+        return AppParams.gameState;
+      }
+    }
+
+    final double _menuLeft = AppParams.gameSize[0] * 0.5 - _butWidth * 0.5;
+    final double _menuRight = AppParams.gameSize[0] * 0.5 + _butWidth * 0.5;
+    final double _menuTop = AppParams.gameSize[1] * 0.8 - _butHeight * 0.5;
+    final double _menuBot = AppParams.gameSize[1] * 0.8 + _butHeight * 0.5;
+
+    if (yTap >= _menuTop && yTap <= _menuBot) {
+      if (xTap >= _menuLeft && xTap <= _menuRight) {
+        return -3;
+      } else {
+        return AppParams.gameState;
+      }
+    }
     return AppParams.gameState;
   }
 }

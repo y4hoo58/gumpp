@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:is_first_run/is_first_run.dart';
-
 import 'package:gumpp/widgets/game_mode_widget.dart';
 
 class PlayButton extends StatefulWidget {
@@ -15,18 +13,10 @@ class PlayButtonState extends State<PlayButton> {
 
   String assetName;
 
-  bool isFirstRun = false;
-
   PlayButtonState();
 
   @override
-  void initState() {
-    _initAsynState();
-  }
-
-  void _initAsynState() async {
-    isFirstRun = await IsFirstRun.isFirstRun();
-  }
+  void initState() {}
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +40,7 @@ class PlayButtonState extends State<PlayButton> {
         onPressed: () {
           showDialog(
               context: context,
-              builder: (BuildContext context) => GameModWidg(isFirstRun));
+              builder: (BuildContext context) => GameModWidg(false));
         },
       ),
     );

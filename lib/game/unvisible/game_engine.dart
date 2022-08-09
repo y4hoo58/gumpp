@@ -41,12 +41,6 @@ class GameEngine {
     create_initial_sticks();
 
     myCharacter = MyCharacter();
-
-    gameRender.setParameters(
-      all_sticks,
-      myCharacter,
-      y_hand,
-    );
   }
 
   void create_initial_sticks() {
@@ -110,17 +104,11 @@ class GameEngine {
     //edildikten sonra gerçekleştiriliyor.
     bool is_char_died = myCharacter.is_char_died();
 
-    gameRender.setParameters(
-      all_sticks,
-      myCharacter,
-      y_hand,
-    );
-
     updateScore();
 
     if (is_char_died) {
       if (AppParams.isTutorial || AppParams.isTraining) {
-        if (AppParams.totalScore > 10000) {
+        if (AppParams.totalScore > 5000) {
           return true;
         } else {
           myCharacter.y_speed = AppParams.gameSize[1] * 0.2;
@@ -226,7 +214,19 @@ class GameEngine {
         AppParams.totalScore + myCharacter.abs_char_offset.toInt();
   }
 
-  void render(Canvas canvas) {
-    gameRender.render(canvas);
+  void render(final Canvas _canvas) {
+    gameRender.render(
+      _canvas,
+      renderAllSticks,
+      myCharacter.render,
+      y_hand,
+      prediction_box_area,
+    );
+  }
+
+  void renderAllSticks(final Canvas _canvas) {
+    for (var i = 0; i < all_sticks.length; i++) {
+      all_sticks[i].render(_canvas);
+    }
   }
 }

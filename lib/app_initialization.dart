@@ -72,7 +72,7 @@ class AppInitialization {
     sayede tutorial ekranı gösterilebilir.
    */
   Future<void> checkIsFirstRun() async {
-    AppParams.isTutorial ??= await IsFirstRun.isFirstRun();
+    //AppParams.isTutorial = await IsFirstRun.isFirstRun();
   }
 
   /*

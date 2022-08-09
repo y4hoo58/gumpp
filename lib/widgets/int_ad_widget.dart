@@ -7,7 +7,6 @@ class IntAdWidg {
   InterstitialAd interstitialAd;
   bool isInterstitialAdReady = false;
 
-  // TODO: Implement _loadInterstitialAd()
   void loadInterstitialAd() {
     InterstitialAd.load(
       adUnitId: AdHelper.interstitialAdUnitId,
@@ -17,15 +16,18 @@ class IntAdWidg {
           this.interstitialAd = ad;
 
           ad.fullScreenContentCallback = FullScreenContentCallback(
-            onAdDismissedFullScreenContent: (ad) {
-              //_moveToHome();
+            onAdDismissedFullScreenContent: (InterstitialAd ad) {
+              ad.dispose();
+            },
+            onAdFailedToShowFullScreenContent:
+                (InterstitialAd ad, AdError error) {
+              ad.dispose();
             },
           );
 
           isInterstitialAdReady = true;
         },
         onAdFailedToLoad: (err) {
-          //print('Failed to load an interstitial ad: ${err.message}');
           isInterstitialAdReady = false;
         },
       ),

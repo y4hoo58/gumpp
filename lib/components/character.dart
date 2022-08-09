@@ -28,8 +28,12 @@ class MyCharacter {
     //TODO: Yerini değiştir
     gravity = AppParams.gameSize[1] * gravity_fac;
 
+    final double _square = pow(
+      pow(AppParams.gameSize[0], 2) + pow(AppParams.gameSize[1], 2),
+      0.5,
+    );
     //Create the character variables and constants..
-    radius = char_radius_fac * AppParams.gameSize[0];
+    radius = char_radius_fac * _square * 0.5;
     center_x = char_center_x_fac * AppParams.gameSize[0];
     center_y = char_center_y_fac * AppParams.gameSize[1];
     y_speed = char_port_y_speed_fac * AppParams.gameSize[1];
